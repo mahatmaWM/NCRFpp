@@ -35,6 +35,7 @@ class CRF(nn.Module):
         super(CRF, self).__init__()
         print("build batched CRF...")
         self.gpu = gpu
+        self.average_batch = True
         # Matrix of transition parameters.  Entry i,j is the score of transitioning from i to j.
         self.tagset_size = tagset_size
         # # We add 2 here, because of START_TAG and STOP_TAG
@@ -277,13 +278,20 @@ class CRF(nn.Module):
         return gold_score
 
     def neg_log_likelihood_loss(self, feats, mask, tags):
-        # nonegative log likelihood
+        '''
+        计算一个batch的loss
+        :param feats: (batch, seq_len, self.tag_size+2)
+        :param mask: (batch, seq_len)
+        :param tags: (batch, seq_len)
+        :return:
+        '''
         batch_size = feats.size(0)
         forward_score, scores = self._calculate_PZ(feats, mask)
         gold_score = self._score_sentence(scores, mask, tags)
-        # print "batch, f:", forward_score.data[0], " g:", gold_score.data[0], " dis:", forward_score.data[0] - gold_score.data[0]
-        # exit(0)
-        return forward_score - gold_score
+        if self.average_batch:
+            return (forward_score - gold_score) / batch_size
+        else:
+            return forward_score - gold_score
 
     def _viterbi_decode_nbest(self, feats, mask, nbest):
         """
@@ -299,6 +307,7 @@ class CRF(nn.Module):
         seq_len = feats.size(1)
         tag_size = feats.size(2)
         assert (tag_size == self.tagset_size + 2)
+
         # calculate sentence length for each sentence
         length_mask = torch.sum(mask.long(), dim=1).view(batch_size, 1).long()
         # mask to (seq_len, batch_size)
@@ -310,14 +319,15 @@ class CRF(nn.Module):
         scores = feats + self.transitions.view(1, tag_size, tag_size).expand(ins_num, tag_size, tag_size)
         scores = scores.view(seq_len, batch_size, tag_size, tag_size)
 
-        # build iter
-        seq_iter = enumerate(scores)
         # record the position of best score
         back_points = list()
         partition_history = list()
         #  reverse mask (bug for mask = 1- mask, use this as alternative choice)
         # mask = 1 + (-1)*mask
         mask = (1 - mask.long()).byte()
+
+        # build iter
+        seq_iter = enumerate(scores)
         _, inivalues = next(seq_iter)  # bat_size * from_target_size * to_target_size
         # only need start from start_tag
         partition = inivalues[:, START_TAG, :].clone()  # bat_size * to_target_size
@@ -326,17 +336,14 @@ class CRF(nn.Module):
         # iter over last scores
         for idx, cur_values in seq_iter:
             if idx == 1:
-                cur_values = cur_values.view(batch_size, tag_size, tag_size) + partition.contiguous().view(batch_size,
-                                                                                                           tag_size,
-                                                                                                           1).expand(
-                    batch_size, tag_size, tag_size)
+                cur_values = cur_values.view(batch_size, tag_size, tag_size) + \
+                             partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size, tag_size)
             else:
                 # previous to_target is current from_target
                 # partition: previous results log(exp(from_target)), #(batch_size * nbest * from_target)
                 # cur_values: batch_size * from_target * to_target
-                cur_values = cur_values.view(batch_size, tag_size, 1, tag_size).expand(batch_size, tag_size, nbest,
-                                                                                       tag_size) + partition.contiguous().view(
-                    batch_size, tag_size, nbest, 1).expand(batch_size, tag_size, nbest, tag_size)
+                cur_values = cur_values.view(batch_size, tag_size, 1, tag_size).expand(batch_size, tag_size, nbest, tag_size) + \
+                             partition.contiguous().view(batch_size, tag_size, nbest, 1).expand(batch_size, tag_size, nbest, tag_size)
                 # compare all nbest and all from target
                 cur_values = cur_values.view(batch_size, tag_size * nbest, tag_size)
                 # print "cur size:",cur_values.size()
@@ -362,16 +369,16 @@ class CRF(nn.Module):
             # print cur_bp[0]
             back_points.append(cur_bp)
         # add score to final STOP_TAG
-        partition_history = torch.cat(partition_history, 0).view(seq_len, batch_size, tag_size, nbest).transpose(1,
-                                                                                                                 0).contiguous()  # (batch_size, seq_len, nbest, tag_size)
+        # (batch_size, seq_len, nbest, tag_size)
+        partition_history = torch.cat(partition_history, 0).view(seq_len, batch_size, tag_size, nbest).transpose(1,0).contiguous()
+
         # get the last position for each setences, and select the last partitions using gather()
         last_position = length_mask.view(batch_size, 1, 1, 1).expand(batch_size, 1, tag_size, nbest) - 1
         last_partition = torch.gather(partition_history, 1, last_position).view(batch_size, tag_size, nbest, 1)
+
         # calculate the score from last partition to end state (and then select the STOP_TAG from it)
-        last_values = last_partition.expand(batch_size, tag_size, nbest, tag_size) + self.transitions.view(1, tag_size,
-                                                                                                           1,
-                                                                                                           tag_size).expand(
-            batch_size, tag_size, nbest, tag_size)
+        last_values = last_partition.expand(batch_size, tag_size, nbest, tag_size) + \
+                      self.transitions.view(1, tag_size, 1, tag_size).expand(batch_size, tag_size, nbest, tag_size)
         last_values = last_values.view(batch_size, tag_size * nbest, tag_size)
         end_partition, end_bp = torch.topk(last_values, nbest, 1)
         # end_partition: (batch, nbest, tag_size)
@@ -421,12 +428,10 @@ class CRF(nn.Module):
             # print "pointer: ",idx,  pointer[3]
             # print "back:",back_points[idx][3]
             # print "mask:",mask[idx+1,3]
-            new_pointer = torch.gather(back_points[idx].view(batch_size, tag_size * nbest), 1,
-                                       pointer.contiguous().view(batch_size, nbest))
+            new_pointer = torch.gather(back_points[idx].view(batch_size, tag_size * nbest), 1, pointer.contiguous().view(batch_size, nbest))
             decode_idx[idx] = new_pointer.data / nbest
             # # use new pointer to remember the last end nbest ids for non longest
-            pointer = new_pointer + pointer.contiguous().view(batch_size, nbest) * mask[idx].view(batch_size, 1).expand(
-                batch_size, nbest).long()
+            pointer = new_pointer + pointer.contiguous().view(batch_size, nbest) * mask[idx].view(batch_size, 1).expand(batch_size, nbest).long()
 
         # exit(0)
         path_score = None
