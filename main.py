@@ -51,7 +51,7 @@ def predict_check(pred_variable, gold_variable, mask_variable, sentence_classifi
     overlaped = (pred == gold)
     if sentence_classification:
         right_token = np.sum(overlaped)
-        total_token = overlaped.shape[0]  ## =batch_size
+        total_token = overlaped.shape[0]  # =batch_size
     else:
         right_token = np.sum(overlaped * mask)
         total_token = mask.sum()
@@ -123,6 +123,14 @@ def recover_nbest_label(pred_variable, mask_variable, label_alphabet, word_recov
 
 
 def lr_decay(optimizer, epoch, decay_rate, init_lr):
+    """
+    学习率衰减
+    :param optimizer:
+    :param epoch:
+    :param decay_rate:
+    :param init_lr:
+    :return:
+    """
     lr = init_lr / (1 + decay_rate * epoch)
     print(" Learning rate is set as:", lr)
     for param_group in optimizer.param_groups:
@@ -148,7 +156,7 @@ def evaluate(data, model, name, nbest=None):
     pred_scores = []
     pred_results = []
     gold_results = []
-    ## set model in eval model
+    # set model in eval model
     model.eval()
     batch_size = data.HP_batch_size
     start_time = time.time()
@@ -162,15 +170,18 @@ def evaluate(data, model, name, nbest=None):
         instance = instances[start:end]
         if not instance:
             continue
-        batch_word, batch_features, batch_wordlen, batch_wordrecover, batch_char, batch_charlen, batch_charrecover, batch_label, mask = batchify_with_label(
-            instance, data.HP_gpu, False, data.sentence_classification)
+        batch_word, batch_features, batch_wordlen, batch_wordrecover, batch_char, \
+        batch_charlen, batch_charrecover, batch_label, mask = batchify_with_label(instance,
+                                                                                  data.HP_gpu,
+                                                                                  False,
+                                                                                  data.sentence_classification)
         if nbest and not data.sentence_classification:
             scores, nbest_tag_seq = model.decode_nbest(batch_word, batch_features, batch_wordlen, batch_char,
                                                        batch_charlen, batch_charrecover, mask, nbest)
             nbest_pred_result = recover_nbest_label(nbest_tag_seq, mask, data.label_alphabet, batch_wordrecover)
             nbest_pred_results += nbest_pred_result
             pred_scores += scores[batch_wordrecover].cpu().data.numpy().tolist()
-            ## select the best sequence to evalurate
+            # select the best sequence to evalurate
             tag_seq = nbest_tag_seq[:, :, 0]
         else:
             tag_seq = model(batch_word, batch_features, batch_wordlen, batch_char, batch_charlen, batch_charrecover,
@@ -197,29 +208,34 @@ def batchify_with_label(input_batch_list, gpu, if_train=True, sentence_classific
 
 def batchify_sequence_labeling_with_label(input_batch_list, gpu, if_train=True):
     """
-        input: list of words, chars and labels, various length. [[words, features, chars, labels],[words, features, chars,labels],...]
-            words: word ids for one sentence. (batch_size, sent_len)
-            features: features ids for one sentence. (batch_size, sent_len, feature_num)
-            chars: char ids for on sentences, various length. (batch_size, sent_len, each_word_length)
-            labels: label ids for one sentence. (batch_size, sent_len)
+    每个batch内部按照最长的语句做padding操作
+    input: list of words, chars and labels, various length. [[words, features, chars, labels]...]
+        从input_batch_list里面很容易转化为下面的格式
+        words: word ids for one sentence. (batch_size, sent_len)
+        features: features ids for one sentence. (batch_size, sent_len, feature_num)
+        chars: char ids for on sentences, various length. (batch_size, sent_len, each_word_length)
+        labels: label ids for one sentence. (batch_size, sent_len)
 
-        output:
-            zero padding for word and char, with their batch length
-            word_seq_tensor: (batch_size, max_sent_len) Variable
-            feature_seq_tensors: [(batch_size, max_sent_len),...] list of Variable
-            word_seq_lengths: (batch_size,1) Tensor
-            char_seq_tensor: (batch_size*max_sent_len, max_word_len) Variable
-            char_seq_lengths: (batch_size*max_sent_len,1) Tensor
-            char_seq_recover: (batch_size*max_sent_len,1)  recover char sequence order
-            label_seq_tensor: (batch_size, max_sent_len)
-            mask: (batch_size, max_sent_len)
+    output:
+        zero padding for word and char, with their batch length
+        word_seq_tensor: (batch_size, max_sent_len) Variable
+        feature_seq_tensors: [(batch_size, max_sent_len),...] list of Variable
+        word_seq_lengths: (batch_size,1) Tensor
+        char_seq_tensor: (batch_size*max_sent_len, max_word_len) Variable
+        char_seq_lengths: (batch_size*max_sent_len,1) Tensor
+        char_seq_recover: (batch_size*max_sent_len,1) recover char sequence order
+        label_seq_tensor: (batch_size, max_sent_len)
+        mask: (batch_size, max_sent_len)
     """
+
+    # 从input_batch_list里面转化为下面的格式，第一维为batch_size
     batch_size = len(input_batch_list)
     words = [sent[0] for sent in input_batch_list]
     features = [np.asarray(sent[1]) for sent in input_batch_list]
     feature_num = len(features[0][0])
     chars = [sent[2] for sent in input_batch_list]
     labels = [sent[3] for sent in input_batch_list]
+
     word_seq_lengths = torch.LongTensor(list(map(len, words)))
     max_seq_len = word_seq_lengths.max().item()
     word_seq_tensor = torch.zeros((batch_size, max_seq_len), requires_grad=if_train).long()
@@ -239,10 +255,10 @@ def batchify_sequence_labeling_with_label(input_batch_list, gpu, if_train=True):
     word_seq_tensor = word_seq_tensor[word_perm_idx]
     for idx in range(feature_num):
         feature_seq_tensors[idx] = feature_seq_tensors[idx][word_perm_idx]
-
     label_seq_tensor = label_seq_tensor[word_perm_idx]
     mask = mask[word_perm_idx]
-    ### deal with char
+
+    # deal with char
     # pad_chars (batch_size, max_seq_len)
     pad_chars = [chars[idx] + [[0]] * (max_seq_len - len(chars[idx])) for idx in range(len(chars))]
     length_list = [list(map(len, pad_char)) for pad_char in pad_chars]
@@ -270,12 +286,13 @@ def batchify_sequence_labeling_with_label(input_batch_list, gpu, if_train=True):
         char_seq_tensor = char_seq_tensor.cuda()
         char_seq_recover = char_seq_recover.cuda()
         mask = mask.cuda()
-    return word_seq_tensor, feature_seq_tensors, word_seq_lengths, word_seq_recover, char_seq_tensor, char_seq_lengths, char_seq_recover, label_seq_tensor, mask
+    return word_seq_tensor, feature_seq_tensors, word_seq_lengths, word_seq_recover, char_seq_tensor, \
+           char_seq_lengths, char_seq_recover, label_seq_tensor, mask
 
 
 def batchify_sentence_classification_with_label(input_batch_list, gpu, if_train=True):
     """
-        input: list of words, chars and labels, various length. [[words, features, chars, labels],[words, features, chars,labels],...]
+        input: list of words, chars and labels, various length. [[words, features, chars, labels]...]
             words: word ids for one sentence. (batch_size, sent_len)
             features: features ids for one sentence. (batch_size, feature_num), each sentence has one set of feature
             chars: char ids for on sentences, various length. (batch_size, sent_len, each_word_length)
@@ -321,7 +338,7 @@ def batchify_sentence_classification_with_label(input_batch_list, gpu, if_train=
         feature_seq_tensors[idx] = feature_seq_tensors[idx][word_perm_idx]
     label_seq_tensor = label_seq_tensor[word_perm_idx]
     mask = mask[word_perm_idx]
-    ### deal with char
+    ## deal with char
     # pad_chars (batch_size, max_seq_len)
     pad_chars = [chars[idx] + [[0]] * (max_seq_len - len(chars[idx])) for idx in range(len(chars))]
     length_list = [list(map(len, pad_char)) for pad_char in pad_chars]
@@ -349,7 +366,8 @@ def batchify_sentence_classification_with_label(input_batch_list, gpu, if_train=
         char_seq_tensor = char_seq_tensor.cuda()
         char_seq_recover = char_seq_recover.cuda()
         mask = mask.cuda()
-    return word_seq_tensor, feature_seq_tensors, word_seq_lengths, word_seq_recover, char_seq_tensor, char_seq_lengths, char_seq_recover, label_seq_tensor, mask
+    return word_seq_tensor, feature_seq_tensors, word_seq_lengths, word_seq_recover, char_seq_tensor, \
+           char_seq_lengths, char_seq_recover, label_seq_tensor, mask
 
 
 def train(data):
@@ -361,6 +379,7 @@ def train(data):
         model = SentClassifier(data)
     else:
         model = SeqLabel(data)
+
     # loss_function = nn.NLLLoss()
     if data.optimizer.lower() == "sgd":
         optimizer = optim.SGD(model.parameters(), lr=data.HP_lr, momentum=data.HP_momentum, weight_decay=data.HP_l2)
@@ -375,9 +394,9 @@ def train(data):
     else:
         print("Optimizer illegal: %s" % (data.optimizer))
         exit(1)
+
     best_dev = -10
-    # data.HP_iteration = 1
-    ## start training
+    # start training
     for idx in range(data.HP_iteration):
         epoch_start = time.time()
         temp_start = epoch_start
@@ -392,7 +411,8 @@ def train(data):
         whole_token = 0
         random.shuffle(data.train_Ids)
         print("Shuffle: first input word list:", data.train_Ids[0][0])
-        ## set model in train model
+
+        # set model in train model
         model.train()
         model.zero_grad()
         batch_size = data.HP_batch_size
@@ -404,11 +424,16 @@ def train(data):
             end = (batch_id + 1) * batch_size
             if end > train_num:
                 end = train_num
+
+            # 一个batch内的input
             instance = data.train_Ids[start:end]
             if not instance:
                 continue
-            batch_word, batch_features, batch_wordlen, batch_wordrecover, batch_char, batch_charlen, batch_charrecover, batch_label, mask = batchify_with_label(
-                instance, data.HP_gpu, True, data.sentence_classification)
+            batch_word, batch_features, batch_wordlen, batch_wordrecover, batch_char, batch_charlen, \
+            batch_charrecover, batch_label, mask = batchify_with_label(instance,
+                                                                       data.HP_gpu,
+                                                                       True,
+                                                                       data.sentence_classification)
             instance_count += 1
             loss, tag_seq = model.neg_log_likelihood_loss(batch_word, batch_features, batch_wordlen, batch_char,
                                                           batch_charlen, batch_charrecover, batch_label, mask)
@@ -423,7 +448,7 @@ def train(data):
                 temp_cost = temp_time - temp_start
                 temp_start = temp_time
                 print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
-                end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
+                    end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
                 if sample_loss > 1e8 or str(sample_loss) == "nan":
                     print("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
                     exit(1)
@@ -435,12 +460,12 @@ def train(data):
         temp_time = time.time()
         temp_cost = temp_time - temp_start
         print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
-        end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
+            end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
 
         epoch_finish = time.time()
         epoch_cost = epoch_finish - epoch_start
         print("Epoch: %s training finished. Time: %.2fs, speed: %.2fst/s,  total loss: %s" % (
-        idx, epoch_cost, train_num / epoch_cost, total_loss))
+            idx, epoch_cost, train_num / epoch_cost, total_loss))
         print("totalloss:", total_loss)
         if total_loss > 1e8 or str(total_loss) == "nan":
             print("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
@@ -452,7 +477,8 @@ def train(data):
 
         if data.seg:
             current_score = f
-            print("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (dev_cost, speed, acc, p, r, f))
+            print("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
+                dev_cost, speed, acc, p, r, f))
         else:
             current_score = acc
             print("Dev: time: %.2fs speed: %.2fst/s; acc: %.4f" % (dev_cost, speed, acc))
@@ -466,12 +492,13 @@ def train(data):
             print("Save current best model in file:", model_name)
             torch.save(model.state_dict(), model_name)
             best_dev = current_score
-        # ## decode test
+        # decode test
         speed, acc, p, r, f, _, _ = evaluate(data, model, "test")
         test_finish = time.time()
         test_cost = test_finish - dev_finish
         if data.seg:
-            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (test_cost, speed, acc, p, r, f))
+            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
+                test_cost, speed, acc, p, r, f))
         else:
             print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f" % (test_cost, speed, acc))
         gc.collect()
@@ -484,7 +511,7 @@ def load_model_decode(data, name):
     else:
         model = SeqLabel(data)
     # model = SeqModel(data)
-    ## load model need consider if the model trained in GPU and load in CPU, or vice versa
+    # load model need consider if the model trained in GPU and load in CPU, or vice versa
     # if not gpu:
     #     model.load_state_dict(torch.load(model_dir))
     #     # model.load_state_dict(torch.load(model_dir), map_location=lambda storage, loc: storage)
@@ -501,7 +528,7 @@ def load_model_decode(data, name):
     time_cost = end_time - start_time
     if data.seg:
         print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
-        name, time_cost, speed, acc, p, r, f))
+            name, time_cost, speed, acc, p, r, f))
     else:
         print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f" % (name, time_cost, speed, acc))
     return pred_results, pred_scores

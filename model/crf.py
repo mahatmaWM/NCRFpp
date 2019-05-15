@@ -35,8 +35,8 @@ class CRF(nn.Module):
         super(CRF, self).__init__()
         print("build batched CRF...")
         self.gpu = gpu
-        self.average_batch = True
         # Matrix of transition parameters.  Entry i,j is the score of transitioning from i to j.
+
         self.tagset_size = tagset_size
         # # We add 2 here, because of START_TAG and STOP_TAG
         # # transitions (f_tag_size, t_tag_size), transition value from f_tag to t_tag
@@ -285,13 +285,9 @@ class CRF(nn.Module):
         :param tags: (batch, seq_len)
         :return:
         '''
-        batch_size = feats.size(0)
         forward_score, scores = self._calculate_PZ(feats, mask)
         gold_score = self._score_sentence(scores, mask, tags)
-        if self.average_batch:
-            return (forward_score - gold_score) / batch_size
-        else:
-            return forward_score - gold_score
+        return forward_score - gold_score
 
     def _viterbi_decode_nbest(self, feats, mask, nbest):
         """

@@ -32,6 +32,7 @@ class WordSequence(nn.Module):
                 self.input_size += data.HP_char_hidden_dim
         for idx in range(self.feature_num):
             self.input_size += data.feature_emb_dims[idx]
+
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
         if self.bilstm_flag:
@@ -91,7 +92,7 @@ class WordSequence(nn.Module):
 
         word_represent = self.wordrep(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                                       char_seq_recover)
-        ## word_embs (batch_size, seq_len, embed_size)
+        # word_embs (batch_size, seq_len, embed_size)
         if self.word_feature_extractor == "CNN":
             batch_size = word_inputs.size(0)
             word_in = torch.tanh(self.word2cnn(word_represent)).transpose(2, 1).contiguous()
@@ -109,9 +110,9 @@ class WordSequence(nn.Module):
             hidden = None
             lstm_out, hidden = self.lstm(packed_words, hidden)
             lstm_out, _ = pad_packed_sequence(lstm_out)
-            ## lstm_out (seq_len, seq_len, hidden_size)
+            # lstm_out (seq_len, seq_len, hidden_size)
             feature_out = self.droplstm(lstm_out.transpose(1, 0))
-        ## feature_out (batch_size, seq_len, hidden_size)
+        # feature_out (batch_size, seq_len, hidden_size)
         outputs = self.hidden2tag(feature_out)
         return outputs
 
@@ -131,7 +132,7 @@ class WordSequence(nn.Module):
 
         word_represent = self.wordrep(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                                       char_seq_recover)
-        ## word_embs (batch_size, seq_len, embed_size)
+        # word_embs (batch_size, seq_len, embed_size)
         batch_size = word_inputs.size(0)
         if self.word_feature_extractor == "CNN":
             word_in = torch.tanh(self.word2cnn(word_represent)).transpose(2, 1).contiguous()
@@ -148,8 +149,8 @@ class WordSequence(nn.Module):
             packed_words = pack_padded_sequence(word_represent, word_seq_lengths.cpu().numpy(), True)
             hidden = None
             lstm_out, hidden = self.lstm(packed_words, hidden)
-            ## lstm_out (seq_len, seq_len, hidden_size)
-            ## feature_out (batch_size, hidden_size)
+            # lstm_out (seq_len, seq_len, hidden_size)
+            # feature_out (batch_size, hidden_size)
             feature_out = hidden[0].transpose(1, 0).contiguous().view(batch_size, -1)
 
         feature_list = [feature_out]
@@ -157,5 +158,5 @@ class WordSequence(nn.Module):
             feature_list.append(self.feature_embeddings[idx](feature_inputs[idx]))
         final_feature = torch.cat(feature_list, 1)
         outputs = self.hidden2tag(self.droplstm(final_feature))
-        ## outputs: (batch_size, label_alphabet_size)
+        # outputs: (batch_size, label_alphabet_size)
         return outputs
