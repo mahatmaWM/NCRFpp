@@ -185,6 +185,11 @@ class Data:
         sys.stdout.flush()
 
     def initial_feature_alphabets(self):
+        """
+        序列标注的文件格式：
+        中 feat1 feat2 feat* label
+        :return:
+        """
         if self.sentence_classification:
             # if sentence classification data format, splited by '\t'
             items = open(self.train_dir, 'r').readline().strip('\n').split('\t')

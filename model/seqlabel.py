@@ -31,7 +31,7 @@ class SeqLabel(nn.Module):
         self.gpu = data.HP_gpu
         self.average_batch = data.average_batch_loss
 
-        # add two more label for downlayer lstm, use original label size for CRF
+        # add two more label for down layer lstm, use original label size for CRF
         label_size = data.label_alphabet_size
         data.label_alphabet_size += 2
 

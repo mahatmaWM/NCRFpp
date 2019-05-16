@@ -25,21 +25,26 @@ def log_sum_exp(vec, m_size):
     """
     _, idx = torch.max(vec, 1)  # B * 1 * M
     max_score = torch.gather(vec, 1, idx.view(-1, 1, m_size)).view(-1, 1, m_size)  # B * M
-    return max_score.view(-1, m_size) + torch.log(torch.sum(torch.exp(vec - max_score.expand_as(vec)), 1)).view(-1,
-                                                                                                                m_size)  # B * M
+    return max_score.view(-1, m_size) + \
+           torch.log(torch.sum(torch.exp(vec - max_score.expand_as(vec)), 1)).view(-1, m_size)  # B * M
 
 
 class CRF(nn.Module):
+    """
+    CRF层实现
+    """
 
     def __init__(self, tagset_size, gpu):
         super(CRF, self).__init__()
         print("build batched CRF...")
         self.gpu = gpu
-        # Matrix of transition parameters.  Entry i,j is the score of transitioning from i to j.
 
+        # Matrix of transition parameters.
+        # Entry i,j is the score of transitioning from i to j.
         self.tagset_size = tagset_size
-        # # We add 2 here, because of START_TAG and STOP_TAG
-        # # transitions (f_tag_size, t_tag_size), transition value from f_tag to t_tag
+
+        # We add 2 here, because of START_TAG and STOP_TAG
+        # transitions (f_tag_size, t_tag_size), transition value from f_tag to t_tag
         init_transitions = torch.zeros(self.tagset_size + 2, self.tagset_size + 2)
         init_transitions[:, START_TAG] = -10000.0
         init_transitions[STOP_TAG, :] = -10000.0
@@ -48,15 +53,13 @@ class CRF(nn.Module):
         if self.gpu:
             init_transitions = init_transitions.cuda()
         self.transitions = nn.Parameter(init_transitions)
-
-        # self.transitions = nn.Parameter(torch.Tensor(self.tagset_size+2, self.tagset_size+2))
         # self.transitions.data.zero_()
 
     def _calculate_PZ(self, feats, mask):
         """
-            input:
-                feats: (batch, seq_len, self.tag_size+2)
-                masks: (batch, seq_len)
+        input:
+            feats: (batch, seq_len, self.tag_size + 2)
+            masks: (batch, seq_len)
         """
         batch_size = feats.size(0)
         seq_len = feats.size(1)
@@ -66,12 +69,16 @@ class CRF(nn.Module):
 
         # (batch, seq_len) => (seq_len, batch)
         mask = mask.transpose(1, 0).contiguous()
+
+        # 这里做的目的是为了内部一次性就处理完一个batch的东西
         ins_num = seq_len * batch_size
 
         # be careful the view shape, it is .view(ins_num, 1, tag_size) but not .view(ins_num, tag_size, 1)
         # 尺寸变化
-        # (batch, seq_len, self.tag_size) => (seq_len, batch, self.tag_size) => (ins_num, 1, tag_size)
-        # => (ins_num, tag_size, tag_size)
+        # (batch, seq_len, self.tag_size) =>
+        # (seq_len, batch, self.tag_size) =>
+        # (ins_num, 1, tag_size) =>
+        # (ins_num, tag_size, tag_size)
         feats = feats.transpose(1, 0).contiguous().view(ins_num, 1, tag_size).expand(ins_num, tag_size, tag_size)
 
         # need to consider start
@@ -79,7 +86,7 @@ class CRF(nn.Module):
         scores = scores.view(seq_len, batch_size, tag_size, tag_size)
 
         # build iter
-        # 开始计算一个句子，这里是并行计算一个batch，迭代一次seq_iter就把batch内的全部算了
+        # 这里seq_iter迭代完就是完成一个句子的计算，（里面每次处理都是batch-size个一起处理，迭代完seq_iter就把batch内的全部算了）
         seq_iter = enumerate(scores)
         _, inivalues = next(seq_iter)  # bat_size * from_target_size * to_target_size
 
@@ -94,14 +101,12 @@ class CRF(nn.Module):
             # partition: previous results log(exp(from_target)), #(batch_size * from_target)
             # cur_values: bat_size * from_target * to_target
 
-            cur_values = cur_values + partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size,
-                                                                                                  tag_size)
+            cur_values = cur_values + \
+                         partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size, tag_size)
             cur_partition = log_sum_exp(cur_values, tag_size)
-            # print cur_partition.data
 
-            # 哪些token需要被mask 起来
+            # 哪些token需要被mask起来
             # (bat_size * from_target * to_target) -> (bat_size * to_target)
-            # partition = utils.switch(partition, cur_partition, mask[idx].view(bat_size, 1).expand(bat_size, self.tagset_size)).view(bat_size, -1)
             mask_idx = mask[idx, :].view(batch_size, 1).expand(batch_size, tag_size)
 
             # effective updated partition part, only keep the partition value of mask value = 1
@@ -112,7 +117,9 @@ class CRF(nn.Module):
 
             # replace the partition where the maskvalue=1, other partition value keeps the same
             partition.masked_scatter_(mask_idx, masked_cur_partition)
-        # until the last state, add transition score for all partition (and do log_sum_exp) then select the value in STOP_TAG
+
+        # until the last state, add transition score for all partition (and do log_sum_exp)
+        # then select the value in STOP_TAG
         cur_values = self.transitions.view(1, tag_size, tag_size).expand(batch_size, tag_size, tag_size) + \
                      partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size, tag_size)
         cur_partition = log_sum_exp(cur_values, tag_size)
@@ -121,12 +128,12 @@ class CRF(nn.Module):
 
     def _viterbi_decode(self, feats, mask):
         """
-            input:
-                feats: (batch, seq_len, self.tag_size+2)
-                mask: (batch, seq_len)
-            output:
-                decode_idx: (batch, seq_len) decoded sequence
-                path_score: (batch, 1) corresponding score for each sequence (to be implementated)
+        input:
+            feats: (batch, seq_len, self.tag_size + 2)
+            mask: (batch, seq_len)
+        output:
+            decode_idx: (batch, seq_len) decoded sequence
+            path_score: (batch, 1) corresponding score for each sequence (to be implementated)
         """
         batch_size = feats.size(0)
         seq_len = feats.size(1)
@@ -150,8 +157,7 @@ class CRF(nn.Module):
         # record the position of best score
         back_points = list()
         partition_history = list()
-        #  reverse mask (bug for mask = 1- mask, use this as alternative choice)
-        # mask = 1 + (-1)*mask
+        # reverse mask (bug for mask = 1- mask, use this as alternative choice)
         mask = (1 - mask.long()).byte()
 
         # build iter
@@ -167,8 +173,8 @@ class CRF(nn.Module):
             # previous to_target is current from_target
             # partition: previous results log(exp(from_target)), #(batch_size * from_target)
             # cur_values: batch_size * from_target * to_target
-            cur_values = cur_values + partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size,
-                                                                                                  tag_size)
+            cur_values = cur_values + \
+                         partition.contiguous().view(batch_size, tag_size, 1).expand(batch_size, tag_size, tag_size)
             # forscores, cur_bp = torch.max(cur_values[:,:-2,:], 1) # do not consider START_TAG/STOP_TAG
             partition, cur_bp = torch.max(cur_values, 1)
             partition_history.append(partition)
@@ -226,12 +232,12 @@ class CRF(nn.Module):
 
     def _score_sentence(self, scores, mask, tags):
         """
-            input:
-                scores: variable (seq_len, batch, tag_size, tag_size)
-                mask: (batch, seq_len)
-                tags: tensor  (batch, seq_len)
-            output:
-                score: sum of score for gold sequences within whole batch
+        input:
+            scores: variable (seq_len, batch, tag_size, tag_size)
+            mask: (batch, seq_len)
+            tags: tensor  (batch, seq_len)
+        output:
+            score: sum of score for gold sequences within whole batch
         """
         # Gives the score of a provided tag sequence
         batch_size = scores.size(1)
@@ -246,7 +252,6 @@ class CRF(nn.Module):
             if idx == 0:
                 # start -> first score
                 new_tags[:, 0] = (tag_size - 2) * tag_size + tags[:, 0]
-
             else:
                 new_tags[:, idx] = tags[:, idx - 1] * tag_size + tags[:, idx]
 
@@ -268,7 +273,7 @@ class CRF(nn.Module):
         # mask transpose to (seq_len, batch_size)
         tg_energy = tg_energy.masked_select(mask.transpose(1, 0))
 
-        # # calculate the score from START_TAG to first label
+        # calculate the score from START_TAG to first label
         # start_transition = self.transitions[START_TAG,:].view(1, tag_size).expand(batch_size, tag_size)
         # start_energy = torch.gather(start_transition, 1, tags[0,:])
 
@@ -278,26 +283,26 @@ class CRF(nn.Module):
         return gold_score
 
     def neg_log_likelihood_loss(self, feats, mask, tags):
-        '''
+        """
         计算一个batch的loss
         :param feats: (batch, seq_len, self.tag_size+2)
         :param mask: (batch, seq_len)
         :param tags: (batch, seq_len)
         :return:
-        '''
+        """
         forward_score, scores = self._calculate_PZ(feats, mask)
         gold_score = self._score_sentence(scores, mask, tags)
         return forward_score - gold_score
 
     def _viterbi_decode_nbest(self, feats, mask, nbest):
         """
-            input:
-                feats: (batch, seq_len, self.tag_size+2)
-                mask: (batch, seq_len)
-            output:
-                decode_idx: (batch, nbest, seq_len) decoded sequence
-                path_score: (batch, nbest) corresponding score for each sequence (to be implementated)
-                nbest decode for sentence with one token is not well supported, to be optimized
+        input:
+            feats: (batch, seq_len, self.tag_size+2)
+            mask: (batch, seq_len)
+        output:
+            decode_idx: (batch, nbest, seq_len) decoded sequence
+            path_score: (batch, nbest) corresponding score for each sequence (to be implementated)
+            nbest decode for sentence with one token is not well supported, to be optimized
         """
         batch_size = feats.size(0)
         seq_len = feats.size(1)
@@ -338,8 +343,10 @@ class CRF(nn.Module):
                 # previous to_target is current from_target
                 # partition: previous results log(exp(from_target)), #(batch_size * nbest * from_target)
                 # cur_values: batch_size * from_target * to_target
-                cur_values = cur_values.view(batch_size, tag_size, 1, tag_size).expand(batch_size, tag_size, nbest, tag_size) + \
-                             partition.contiguous().view(batch_size, tag_size, nbest, 1).expand(batch_size, tag_size, nbest, tag_size)
+                cur_values = cur_values.view(batch_size, tag_size, 1, tag_size).expand(batch_size, tag_size, nbest,
+                                                                                       tag_size) + \
+                             partition.contiguous().view(batch_size, tag_size, nbest, 1).expand(batch_size, tag_size,
+                                                                                                nbest, tag_size)
                 # compare all nbest and all from target
                 cur_values = cur_values.view(batch_size, tag_size * nbest, tag_size)
                 # print "cur size:",cur_values.size()
@@ -366,7 +373,8 @@ class CRF(nn.Module):
             back_points.append(cur_bp)
         # add score to final STOP_TAG
         # (batch_size, seq_len, nbest, tag_size)
-        partition_history = torch.cat(partition_history, 0).view(seq_len, batch_size, tag_size, nbest).transpose(1,0).contiguous()
+        partition_history = torch.cat(partition_history, 0).view(seq_len, batch_size, tag_size, nbest).transpose(1,
+                                                                                                                 0).contiguous()
 
         # get the last position for each setences, and select the last partitions using gather()
         last_position = length_mask.view(batch_size, 1, 1, 1).expand(batch_size, 1, tag_size, nbest) - 1
@@ -424,10 +432,12 @@ class CRF(nn.Module):
             # print "pointer: ",idx,  pointer[3]
             # print "back:",back_points[idx][3]
             # print "mask:",mask[idx+1,3]
-            new_pointer = torch.gather(back_points[idx].view(batch_size, tag_size * nbest), 1, pointer.contiguous().view(batch_size, nbest))
+            new_pointer = torch.gather(back_points[idx].view(batch_size, tag_size * nbest), 1,
+                                       pointer.contiguous().view(batch_size, nbest))
             decode_idx[idx] = new_pointer.data / nbest
-            # # use new pointer to remember the last end nbest ids for non longest
-            pointer = new_pointer + pointer.contiguous().view(batch_size, nbest) * mask[idx].view(batch_size, 1).expand(batch_size, nbest).long()
+            # use new pointer to remember the last end nbest ids for non longest
+            pointer = new_pointer + pointer.contiguous().view(batch_size, nbest) * mask[idx].view(batch_size, 1).expand(
+                batch_size, nbest).long()
 
         # exit(0)
         path_score = None

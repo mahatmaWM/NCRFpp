@@ -22,6 +22,36 @@ def normalize_word(word):
 def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, label_alphabet, number_normalized,
                   max_sent_length, sentence_classification=False, split_token='\t', char_padding_size=-1,
                   char_padding_symbol='</pad>'):
+    """
+    读取数据
+
+    读取这种格式数据
+
+    做 [POS]v@0 [DICT]O B-sys.music.song
+    雷 [POS]nr@0 [DICT]B-990789349333405696_B-990792486718935040 I-sys.music.song
+    锋 [POS]nr@1 [DICT]I-990789349333405696_I-990792486718935040 I-sys.music.song
+    式 [POS]k@0 [DICT]O I-sys.music.song
+    的 [POS]u@0 [DICT]O I-sys.music.song
+    好 [POS]a@0 [DICT]O I-sys.music.song
+    少 [POS]n@0 [DICT]B-990785833948811264_B-990792486718935040 I-sys.music.song
+    年 [POS]n@1 [DICT]I-990785833948811264_I-990792486718935040 I-sys.music.song
+    歌 [POS]n@0 [DICT]O O
+    曲 [POS]n@1 [DICT]O O
+
+
+    :param input_file:
+    :param word_alphabet:
+    :param char_alphabet:
+    :param feature_alphabets:
+    :param label_alphabet:
+    :param number_normalized:
+    :param max_sent_length:
+    :param sentence_classification:
+    :param split_token:
+    :param char_padding_size:
+    :param char_padding_symbol:
+    :return:
+    """
     feature_num = len(feature_alphabets)
     in_lines = open(input_file, 'r', encoding="utf8").readlines()
     instence_texts = []
@@ -35,7 +65,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
     char_Ids = []
     label_Ids = []
 
-    ## if sentence classification data format, splited by \t
+    # if sentence classification data format, splited by \t
     if sentence_classification:
         for line in in_lines:
             if len(line) > 2:
@@ -49,7 +79,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
                     if number_normalized:
                         word = normalize_word(word)
                     word_Ids.append(word_alphabet.get_index(word))
-                    ## get char
+                    # get char
                     char_list = []
                     char_Id = []
                     for char in word:
@@ -66,14 +96,14 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
 
                 label = pairs[-1]
                 label_Id = label_alphabet.get_index(label)
-                ## get features
+                # get features
                 feat_list = []
                 feat_Id = []
                 for idx in range(feature_num):
                     feat_idx = pairs[idx + 1].split(']', 1)[-1]
                     feat_list.append(feat_idx)
                     feat_Id.append(feature_alphabets[idx].get_index(feat_idx))
-                ## combine together and return, notice the feature/label as different format with sequence labeling task
+                # combine together and return, notice the feature/label as different format with sequence labeling task
                 if (len(words) > 0) and ((max_sent_length < 0) or (len(words) < max_sent_length)):
                     instence_texts.append([words, feat_list, chars, label])
                     instence_Ids.append([word_Ids, feat_Id, char_Ids, label_Id])
@@ -96,7 +126,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
             label_Ids = []
 
     else:
-        ### for sequence labeling data format i.e. CoNLL 2003
+        # for sequence labeling data format i.e. CoNLL 2003
         for line in in_lines:
             if len(line) > 2:
                 pairs = line.strip().split()
@@ -110,7 +140,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
                 labels.append(label)
                 word_Ids.append(word_alphabet.get_index(word))
                 label_Ids.append(label_alphabet.get_index(label))
-                ## get features
+                # get features
                 feat_list = []
                 feat_Id = []
                 for idx in range(feature_num):
@@ -119,7 +149,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
                     feat_Id.append(feature_alphabets[idx].get_index(feat_idx))
                 features.append(feat_list)
                 feature_Ids.append(feat_Id)
-                ## get char
+                # get char
                 char_list = []
                 char_Id = []
                 for char in word:
@@ -130,7 +160,7 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
                         char_list = char_list + [char_padding_symbol] * (char_padding_size - char_number)
                     assert (len(char_list) == char_padding_size)
                 else:
-                    ### not padding
+                    # not padding
                     pass
                 for char in char_list:
                     char_Id.append(char_alphabet.get_index(char))
@@ -190,7 +220,7 @@ def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, norm
             not_match += 1
     pretrained_size = len(embedd_dict)
     print("Embedding:\n     pretrain word:%s, prefect match:%s, case_match:%s, oov:%s, oov%%:%s" % (
-    pretrained_size, perfect_match, case_match, not_match, (not_match + 0.) / alphabet_size))
+        pretrained_size, perfect_match, case_match, not_match, (not_match + 0.) / alphabet_size))
     return pretrain_emb, embedd_dim
 
 
