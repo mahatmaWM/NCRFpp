@@ -22,7 +22,7 @@ PADDING = "</pad>"
 class Data:
     def __init__(self):
         self.sentence_classification = False
-        self.MAX_SENTENCE_LENGTH = 250
+        self.MAX_SENTENCE_LENGTH = 50
         self.MAX_WORD_LENGTH = -1
         self.number_normalized = True
         self.norm_word_emb = False
@@ -40,7 +40,7 @@ class Data:
         self.split_token = ' ||| '
         self.seg = True
 
-        ## I/O
+        # I/O
         self.train_dir = None
         self.dev_dir = None
         self.test_dir = None
@@ -79,7 +79,7 @@ class Data:
         self.word_emb_dim = 50
         self.char_emb_dim = 30
 
-        ##Networks
+        #Networks
         self.word_feature_extractor = "LSTM"  # "LSTM"/"CNN"/"GRU"/
         self.use_char = True
         self.char_feature_extractor = "CNN"  # "LSTM"/"CNN"/"GRU"/None
@@ -90,7 +90,7 @@ class Data:
         self.average_batch_loss = False
         self.optimizer = "SGD"  # "SGD"/"AdaGrad"/"AdaDelta"/"RMSProp"/"Adam"
         self.status = "train"
-        ## Hyperparameters
+        # Hyperparameters
         self.HP_cnn_layer = 4
         self.HP_iteration = 100
         self.HP_batch_size = 10
@@ -401,6 +401,7 @@ class Data:
                     label_string = content_list[idx][0][idy].encode('utf-8') + " "
                 except:
                     label_string = content_list[idx][0][idy] + " "
+                # print('label_string %s' % label_string)
                 for idz in range(nbest):
                     label_string += predict_results[idx][idz][idy] + " "
                 label_string = label_string.strip() + "\n"

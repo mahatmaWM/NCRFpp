@@ -443,7 +443,7 @@ def train(data):
             # print("loss:",loss.item())
             sample_loss += loss.item()
             total_loss += loss.item()
-            if end % 500 == 0:
+            if end % 5000 == 0:
                 temp_time = time.time()
                 temp_cost = temp_time - temp_start
                 temp_start = temp_time
