@@ -2,24 +2,37 @@
 """
 把我们的序列标注格式转化为项目支持的格式
 """
+
+import codecs
+import random
+seed_num = 42
+random.seed(seed_num)
+
 if __name__ == '__main__':
+    with codecs.open('./slot.music/origin-data/features', "r", "utf-8") as f1, \
+            codecs.open('train-simple.txt', "w", "utf-8") as f_train, \
+            codecs.open('dev-simple.txt', "w", "utf-8") as f_dev, \
+            codecs.open('test-simple.txt', "w", "utf-8") as f_test:
 
-    import codecs
+        sentence = list([])
 
-    with codecs.open('./sample_data/dev.bmes', "r", "utf-8") as f1, codecs.open('temp_res.txt', "w", "utf-8") as f2:
         for line in f1.readlines():
             if line.startswith('B') or line.startswith('E'):
                 continue
 
             line = line.strip('\n')
             splits = line.split('\t')
-            # print(splits)
 
             if len(splits) > 1:
-                f2.write(splits[1]+' [POS]' + splits[2] + ' [DICT]' + splits[3] + ' ' + splits[4] + '\n')
+                # splits[1] + ' [POS]' + splits[2] + ' [DICT]' + splits[3] + ' ' + splits[4]
+                sentence.append(splits[1] + ' ' + splits[4])
             else:
-                f2.write('\n')
-
-
-
-
+                res = '\n'.join(sentence)
+                sentence.clear()
+                sample = random.random()
+                if 0 < sample < 0.8:
+                    f_train.write(res + '\n\n')
+                elif 0.8 <= sample < 0.9:
+                    f_dev.write(res + '\n\n')
+                else:
+                    f_test.write(res + '\n\n')
