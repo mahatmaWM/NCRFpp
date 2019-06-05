@@ -5,16 +5,13 @@
 
 import codecs
 import random
-seed_num = 42
-random.seed(seed_num)
 
 if __name__ == '__main__':
-    with codecs.open('./slot.music/origin-data/features', "r", "utf-8") as f1, \
-            codecs.open('train-simple.txt', "w", "utf-8") as f_train, \
-            codecs.open('dev-simple.txt', "w", "utf-8") as f_dev, \
-            codecs.open('test-simple.txt', "w", "utf-8") as f_test:
+    with codecs.open('./temp/sys.video.film/test_crfpp_char.txt', "r", "utf-8") as f1, \
+            codecs.open('./temp/sys.video.film/test-bi-simple.txt', "w", "utf-8") as f_train:
 
         sentence = list([])
+        chars = list([])
 
         for line in f1.readlines():
             if line.startswith('B') or line.startswith('E'):
@@ -23,16 +20,23 @@ if __name__ == '__main__':
             line = line.strip('\n')
             splits = line.split('\t')
 
+
             if len(splits) > 1:
-                # splits[1] + ' [POS]' + splits[2] + ' [DICT]' + splits[3] + ' ' + splits[4]
-                sentence.append(splits[1] + ' ' + splits[4])
-            else:
-                res = '\n'.join(sentence)
+                # sentence.append(splits[1] + ' [DICT]' + splits[3] + ' ' + splits[4])
+                sentence.append([splits[1], '[POS]' + splits[2], '[DICT]' + splits[3], splits[4]])
+                chars.append(splits[1])
+            elif len(sentence) > 1:
+                for i in range(len(chars)-1):
+                    sentence[i].append('[BI]'+chars[i]+chars[i+1])
+
+                # print(sentence)
+                sentence[-1].append('[BI]'+chars[-1]+'#')
+
+
+                res = list([])
+                for item in sentence:
+                    res.append(item[0] + ' ' + item[-1] + ' ' + item[1] + ' ' + item[2] + ' ' + item[3])
+                res_str = '\n'.join(res)
                 sentence.clear()
-                sample = random.random()
-                if 0 < sample < 0.8:
-                    f_train.write(res + '\n\n')
-                elif 0.8 <= sample < 0.9:
-                    f_dev.write(res + '\n\n')
-                else:
-                    f_test.write(res + '\n\n')
+                chars.clear()
+                f_train.write(res_str + '\n\n')
