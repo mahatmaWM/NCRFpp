@@ -34,8 +34,7 @@ class Data:
         self.feature_name = []
         self.feature_alphabets = []
         self.feature_num = len(self.feature_alphabets)
-        # self.feature_num_in_config = 0
-        self.feature_names_used = list([])
+        self.feature_names_used = set([])
         self.feat_config = None
 
         self.label_alphabet = Alphabet('label', True)
@@ -160,7 +159,7 @@ class Data:
             logging.info(
                 "         Fe: %s  norm       emb: %s" % (self.feature_alphabets[idx].name, self.norm_feature_embs[idx]))
             if self.feature_alphabets[idx].name in used_feature_names:
-                self.feature_names_used.append(self.feature_alphabets[idx].name)
+                self.feature_names_used.add(self.feature_alphabets[idx].name)
 
         logging.info("     FEATURE used in config: Fe: %s" % ' '.join(self.feature_names_used))
 
@@ -300,18 +299,17 @@ class Data:
 
     def build_pretrain_emb(self):
         if self.word_emb_dir:
-            logging.info("Load pretrained word embedding, total_dim: %s, used dim: %s, norm: %s, dir: %s" %
-                         (self.total_word_emb_dim, self.word_emb_dim, self.norm_word_emb, self.word_emb_dir))
+            logging.info("Load pretrained word embedding, used dim: %s, norm: %s, dir: %s" % (self.word_emb_dim,
+                                                                                              self.norm_word_emb,
+                                                                                              self.word_emb_dir))
             self.pretrain_word_embedding, self.word_emb_dim = build_pretrain_embedding(self.word_emb_dir,
                                                                                        self.word_alphabet,
                                                                                        self.word_emb_dim,
-                                                                                       self.total_word_emb_dim,
                                                                                        self.norm_word_emb)
         if self.char_emb_dir:
             logging.info("Load pretrained char embedding, norm: %s, dir: %s" % (self.norm_char_emb, self.char_emb_dir))
             self.pretrain_char_embedding, self.char_emb_dim = build_pretrain_embedding(self.char_emb_dir,
                                                                                        self.char_alphabet,
-                                                                                       self.char_emb_dim,
                                                                                        self.char_emb_dim,
                                                                                        self.norm_char_emb)
         for idx in range(self.feature_num):

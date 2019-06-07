@@ -206,10 +206,10 @@ def read_instance(used_feature_names,
     return instence_texts, instence_Ids
 
 
-def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, total_embedd_dim=300, norm=True):
+def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, norm=True):
     embedd_dict = dict()
     if embedding_path != None:
-        embedd_dict, embedd_dim = load_pretrain_emb(embedding_path, embedd_dim, total_embedd_dim)
+        embedd_dict, embedd_dim = load_pretrain_emb(embedding_path, embedd_dim)
     alphabet_size = word_alphabet.size()
     scale = np.sqrt(3.0 / embedd_dim)
     pretrain_emb = np.empty([word_alphabet.size(), embedd_dim])
@@ -243,11 +243,22 @@ def norm2one(vec):
     return vec / root_sum_square
 
 
-def load_pretrain_emb(embedding_path, embedd_dim, total_embedd_dim):
-    # embedd_dim = -1
+def load_pretrain_emb(embedding_path, embedd_dim):
+    """
+    加载预训练向量，兼容glove和word2vec两种格式
+    :param embedding_path:
+    :param embedd_dim:
+    :return:
+    """
     embedd_dict = dict()
     with open(embedding_path, 'r', encoding="utf8") as file:
-        # logging.info('word emb total dim size = %s' % (len(file.readline().strip().split()) - 1))
+        first_line = file.readline().strip()
+        spilts = first_line.split()
+        if len(spilts) == 2:
+            total_embedd_dim = int(spilts[1])
+        else:
+            total_embedd_dim = len(spilts) - 1
+        logging.info('%s emb file has %s dim size' % (embedding_path, total_embedd_dim))
         for line in file:
             line = line.strip()
             if len(line) == 0:
@@ -256,8 +267,6 @@ def load_pretrain_emb(embedding_path, embedd_dim, total_embedd_dim):
             if embedd_dim < 0:
                 embedd_dim = len(tokens) - 1
             else:
-                # logging.info(total_embedd_dim + 1)
-                # logging.info(len(tokens))
                 assert (total_embedd_dim + 1 == len(tokens))
             embedd = np.empty([1, embedd_dim])
             embedd[:] = tokens[1: embedd_dim + 1]

@@ -517,7 +517,7 @@ def train(data):
 
 
 def load_model_decode(data, name):
-    logging.info("Load Model from file: ", data.model_dir)
+    logging.info("Load Model from file: %s" % data.load_model_dir)
     if data.sentence_classification:
         model = SentClassifier(data)
     else:
@@ -549,28 +549,25 @@ def load_model_decode(data, name):
 if __name__ == '__main__':
     utils.configure_logging()
     parser = argparse.ArgumentParser(description='Tuning with NCRF++')
-    # parser.add_argument('--status', choices=['train', 'decode'], help='update algorithm', default='train')
+    parser.add_argument('--status', choices=['train', 'decode'], help='update algorithm', default='train')
     parser.add_argument('--config', help='Configuration File')
-
     args = parser.parse_args()
     data = Data()
     data.HP_gpu = torch.cuda.is_available()
     data.read_config(args.config)
-    status = data.status.lower()
+    status = args.status
     logging.info("Seed num:%s" % seed_num)
+
+    used_feature_names = list([])
+    if data.feat_config is not None:
+        used_feature_names = list(data.feat_config.keys())
 
     if status == 'train':
         logging.info("MODEL: train")
         data_initialization(data)
-        used_feature_names = list([])
-        if data.feat_config is not None:
-            used_feature_names = list(data.feat_config.keys())
-        # logging.info('used_feature_names=%s' % used_feature_names)
-
         data.generate_instance('train', used_feature_names)
         data.generate_instance('dev', used_feature_names)
         data.generate_instance('test', used_feature_names)
-
         data.build_pretrain_emb()
         # exit(0)
         train(data)
@@ -581,8 +578,8 @@ if __name__ == '__main__':
         logging.info(data.raw_dir)
         # exit(0)
         data.show_data_summary()
-        data.generate_instance('raw')
-        logging.info("nbest: %s" % (data.nbest))
+        data.generate_instance('raw', used_feature_names)
+        logging.info("nbest: %s" % data.nbest)
         decode_results, pred_scores = load_model_decode(data, 'raw')
         if data.nbest and not data.sentence_classification:
             data.write_nbest_decoded_results(decode_results, pred_scores, 'raw')
