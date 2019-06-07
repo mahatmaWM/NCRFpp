@@ -80,6 +80,7 @@ class WordSequence(nn.Module):
                     self.cnn_batchnorm_list[idx] = self.cnn_batchnorm_list[idx].cuda()
             else:
                 self.lstm = self.lstm.cuda()
+        logging.info('  Input size: %s' % self.input_size)
 
     def forward(self, word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths, char_seq_recover):
         """

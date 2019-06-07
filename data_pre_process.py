@@ -7,8 +7,8 @@ import codecs
 import random
 
 if __name__ == '__main__':
-    with codecs.open('./temp/sys.video.film/test_crfpp_char.txt', "r", "utf-8") as f1, \
-            codecs.open('./temp/sys.video.film/test-bi-simple.txt', "w", "utf-8") as f_train:
+    with codecs.open('./ner.tvseries/dev_crfpp_char.txt', "r", "utf-8") as f1, \
+            codecs.open('./ner.tvseries/dev.txt', "w", "utf-8") as f_train:
 
         sentence = list([])
         chars = list([])
