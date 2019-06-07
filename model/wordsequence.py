@@ -84,15 +84,15 @@ class WordSequence(nn.Module):
 
     def forward(self, word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths, char_seq_recover):
         """
-            input:
-                word_inputs: (batch_size, sent_len)
-                feature_inputs: [(batch_size, sent_len), ...] list of variables
-                word_seq_lengths: list of batch_size, (batch_size,1)
-                char_inputs: (batch_size*sent_len, word_length)
-                char_seq_lengths: list of whole batch_size for char, (batch_size*sent_len, 1)
-                char_seq_recover: variable which records the char order information, used to recover char order
-            output:
-                Variable(batch_size, sent_len, hidden_dim)
+        input:
+            word_inputs: (batch_size, sent_len)
+            feature_inputs: [(batch_size, sent_len), ...] list of variables
+            word_seq_lengths: list of batch_size, (batch_size,1)
+            char_inputs: (batch_size*sent_len, word_length)
+            char_seq_lengths: list of whole batch_size for char, (batch_size*sent_len, 1)
+            char_seq_recover: variable which records the char order information, used to recover char order
+        output:
+            Variable(batch_size, sent_len, hidden_dim)
         """
 
         word_represent = self.wordrep(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
@@ -128,15 +128,15 @@ class WordSequence(nn.Module):
     def sentence_representation(self, word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                                 char_seq_recover):
         """
-            input:
-                word_inputs: (batch_size, sent_len)
-                feature_inputs: [(batch_size, ), ...] list of variables
-                word_seq_lengths: list of batch_size, (batch_size,1)
-                char_inputs: (batch_size*sent_len, word_length)
-                char_seq_lengths: list of whole batch_size for char, (batch_size*sent_len, 1)
-                char_seq_recover: variable which records the char order information, used to recover char order
-            output:
-                Variable(batch_size, sent_len, hidden_dim)
+        input:
+            word_inputs: (batch_size, sent_len)
+            feature_inputs: [(batch_size, ), ...] list of variables
+            word_seq_lengths: list of batch_size, (batch_size,1)
+            char_inputs: (batch_size*sent_len, word_length)
+            char_seq_lengths: list of whole batch_size for char, (batch_size*sent_len, 1)
+            char_seq_recover: variable which records the char order information, used to recover char order
+        output:
+            Variable(batch_size, sent_len, hidden_dim)
         """
 
         word_represent = self.wordrep(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,

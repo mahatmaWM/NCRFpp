@@ -148,7 +148,7 @@ class Data:
         used_feature_names = list([])
         if self.feat_config is not None:
             used_feature_names = list(self.feat_config.keys())
-        logging.info("     FIND FEATURE(if not set in config, use default set): %s" % (self.feature_num))
+        logging.info("     FIND FEATURE: %s" % (self.feature_num))
         for idx in range(self.feature_num):
             logging.info("         Fe: %s  alphabet  size: %s" % (
                 self.feature_alphabets[idx].name, self.feature_alphabet_sizes[idx]))
@@ -161,7 +161,7 @@ class Data:
             if self.feature_alphabets[idx].name in used_feature_names:
                 self.feature_names_used.add(self.feature_alphabets[idx].name)
 
-        logging.info("     FEATURE used in config: Fe: %s" % ' '.join(self.feature_names_used))
+        logging.info("     USED FEATURE: Fe: %s" % ' '.join(self.feature_names_used))
 
         # self.feature_num_in_config = len(self.feat_config)
         logging.info(" " + "++" * 20)

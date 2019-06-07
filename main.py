@@ -134,7 +134,7 @@ def lr_decay(optimizer, epoch, decay_rate, init_lr):
     :return:
     """
     lr = init_lr / (1 + decay_rate * epoch)
-    logging.info(" Learning rate is set as:", lr)
+    logging.info(" Learning rate is set as: %s" % lr)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
     return optimizer
@@ -150,7 +150,7 @@ def evaluate(data, model, name, nbest=None):
     elif name == 'raw':
         instances = data.raw_Ids
     else:
-        logging.info("Error: wrong evaluate name,", name)
+        logging.info("Error: wrong evaluate name, %s" % name)
         exit(1)
     right_token = 0
     whole_token = 0

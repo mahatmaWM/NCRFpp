@@ -45,7 +45,7 @@ class WordRep(nn.Module):
                                                      self.gpu)
             else:
                 logging.info("Error char feature selection, please check parameter data.char_feature_extractor "
-                      "(CNN/LSTM/GRU/ALL).")
+                             "(CNN/LSTM/GRU/ALL).")
                 exit(0)
         self.embedding_dim = data.word_emb_dim
         self.drop = nn.Dropout(data.HP_dropout)
@@ -55,15 +55,12 @@ class WordRep(nn.Module):
         else:
             self.word_embedding.weight.data.copy_(
                 torch.from_numpy(self.random_embedding(data.word_alphabet.size(), self.embedding_dim)))
-
         self.feature_num = data.feature_num
         self.feature_names_used = data.feature_names_used
-        # self.feature_num = data.feature_num_in_config
         self.feature_embedding_dims = data.feature_emb_dims
         self.feature_embeddings = nn.ModuleList()
 
         # TODO 获取feature的embedding向量 这里是过一遍数据中所有的特征，然后再根据配置挑出需要的特征
-        # logging.info('data.feature_alphabets[idx]=%s' % data.feature_alphabets)
         for idx in range(self.feature_num):
             if data.feature_alphabets[idx].name in self.feature_names_used:
                 self.feature_embeddings.append(
@@ -73,11 +70,11 @@ class WordRep(nn.Module):
             if data.feature_alphabets[idx].name in self.feature_names_used:
                 j = j + 1
                 if data.pretrain_feature_embeddings[idx] is not None:
-                    self.feature_embeddings[j].weight.data.copy_(torch.from_numpy(data.pretrain_feature_embeddings[idx]))
+                    self.feature_embeddings[j].weight.data.copy_(
+                        torch.from_numpy(data.pretrain_feature_embeddings[idx]))
                 else:
                     self.feature_embeddings[j].weight.data.copy_(torch.from_numpy(
                         self.random_embedding(data.feature_alphabets[idx].size(), self.feature_embedding_dims[idx])))
-
         if self.gpu:
             self.drop = self.drop.cuda()
             self.word_embedding = self.word_embedding.cuda()

@@ -25,7 +25,7 @@ def read_instance(used_feature_names,
                   max_sent_length, sentence_classification=False, split_token='\t', char_padding_size=-1,
                   char_padding_symbol='</pad>'):
     """
-    读取数据
+    读取数据，会根据used_feature_names来选择需要的特征，第二列开始叫特征列
 
     读取这种格式数据
 
@@ -40,7 +40,7 @@ def read_instance(used_feature_names,
     歌 [POS]n@0 [DICT]O O
     曲 [POS]n@1 [DICT]O O
 
-
+    :param used_feature_names:
     :param input_file:
     :param word_alphabet:
     :param char_alphabet:
@@ -56,11 +56,6 @@ def read_instance(used_feature_names,
     """
     # logging.info('used_feature_names ', used_feature_names)
     # logging.info('feature_alphabets ', feature_alphabets[0].name, feature_alphabets[1].name)
-    used_feature_index_list = list([])
-    for i in range(len(feature_alphabets)):
-        if feature_alphabets[i].name in used_feature_names:
-            used_feature_index_list.append(i)
-
     feature_num = len(feature_alphabets)
     in_lines = open(input_file, 'r', encoding="utf8").readlines()
     instence_texts = []
@@ -133,7 +128,6 @@ def read_instance(used_feature_names,
             word_Ids = []
             feature_Ids = []
             label_Ids = []
-
     else:
         # for sequence labeling data format i.e. CoNLL 2003
         for line in in_lines:
@@ -154,10 +148,8 @@ def read_instance(used_feature_names,
                 feat_list = []
                 feat_Id = []
                 for idx in range(feature_num):
-                    # used_feature_index_list [0, 1, 3]，表示需要用到的特征的index
-                    if idx in used_feature_index_list:
+                    if feature_alphabets[idx].name in used_feature_names:
                         feat_idx = pairs[idx + 1].split(']', 1)[-1]
-                        # logging.info('feat_idx=', feat_idx)
                         feat_list.append(feat_idx)
                         feat_Id.append(feature_alphabets[idx].get_index(feat_idx))
                 features.append(feat_list)
@@ -233,8 +225,8 @@ def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, norm
             pretrain_emb[index, :] = np.random.uniform(-scale, scale, [1, embedd_dim])
             not_match += 1
     pretrained_size = len(embedd_dict)
-    logging.info("Embedding:\n     pretrain word:%s, prefect match:%s, case_match:%s, oov:%s, oov%%:%s" % (
-        pretrained_size, perfect_match, case_match, not_match, (not_match + 0.) / alphabet_size))
+    logging.info("Embedding:    pretrain word:%s, prefect match:%s, case_match:%s, alphabet_size:%s, oov:%s, oov%%:%s" % (
+        pretrained_size, perfect_match, case_match, not_match, alphabet_size, (not_match + 0.) / alphabet_size))
     return pretrain_emb, embedd_dim
 
 

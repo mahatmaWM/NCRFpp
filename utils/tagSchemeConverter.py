@@ -11,10 +11,11 @@
 from __future__ import print_function
 
 import sys
+import logging
 
 
 def BIO2BIOES(input_file, output_file):
-    logging.info("Convert BIO -> BIOES for file:", input_file)
+    logging.info("Convert BIO -> BIOES for file: %s" % input_file)
     with open(input_file, 'r') as in_file:
         fins = in_file.readlines()
     fout = open(output_file, 'w')
@@ -46,7 +47,7 @@ def BIO2BIOES(input_file, output_file):
             words.append(pair[0])
             labels.append(pair[-1].upper())
     fout.close()
-    logging.info("BIOES file generated:", output_file)
+    logging.info("BIOES file generated: %s" % output_file)
 
 
 def BIOES2BIO(input_file, output_file):

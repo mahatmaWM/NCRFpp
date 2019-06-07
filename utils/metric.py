@@ -11,7 +11,7 @@ import sys
 import logging
 
 
-## input as sentence level labels
+# input as sentence level labels
 def get_ner_fmeasure(golden_lists, predict_lists, label_type="BMES"):
     sent_num = len(golden_lists)
     golden_full = []
@@ -33,8 +33,6 @@ def get_ner_fmeasure(golden_lists, predict_lists, label_type="BMES"):
         else:
             gold_matrix = get_ner_BIO(golden_list)
             pred_matrix = get_ner_BIO(predict_list)
-        # print "gold", gold_matrix
-        # print "pred", pred_matrix
         right_ner = list(set(gold_matrix).intersection(set(pred_matrix)))
         golden_full += gold_matrix
         predict_full += pred_matrix
@@ -55,7 +53,6 @@ def get_ner_fmeasure(golden_lists, predict_lists, label_type="BMES"):
     else:
         f_measure = 2 * precision * recall / (precision + recall)
     accuracy = (right_tag + 0.0) / all_tag
-    # print "Accuracy: ", right_tag,"/",all_tag,"=",accuracy
     if label_type.upper().startswith("B-"):
         logging.info("gold_num=%s, pred_num=%s, right_num=%s" % (golden_num, predict_num, right_num))
     else:
@@ -212,12 +209,12 @@ def readTwoLabelSentence(input_file, pred_col=-1):
 
 
 def fmeasure_from_file(golden_file, predict_file, label_type="BMES"):
-    logging.info("Get f measure from file:", golden_file, predict_file)
-    logging.info("Label format:", label_type)
+    logging.info("Get f measure from file: %s, %s" % (golden_file, predict_file))
+    logging.info("Label format: %s" % label_type)
     golden_sent, golden_labels = readSentence(golden_file)
     predict_sent, predict_labels = readSentence(predict_file)
     P, R, F = get_ner_fmeasure(golden_labels, predict_labels, label_type)
-    logging.info("P:%sm R:%s, F:%s" % (P, R, F))
+    logging.info("P:%s R:%s, F:%s" % (P, R, F))
 
 
 def fmeasure_from_singlefile(twolabel_file, label_type="BMES", pred_col=-1):
