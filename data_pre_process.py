@@ -29,7 +29,7 @@ if __name__ == '__main__':
                 for i in range(len(chars)-1):
                     sentence[i].append('[BI]'+chars[i]+chars[i+1])
 
-                # print(sentence)
+                # logging.info(sentence)
                 sentence[-1].append('[BI]'+chars[-1]+'#')
 
 

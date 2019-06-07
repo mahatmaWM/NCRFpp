@@ -11,6 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from .wordsequence import WordSequence
 from .crf import CRF
+import logging
 
 
 class SeqLabel(nn.Module):
@@ -21,12 +22,12 @@ class SeqLabel(nn.Module):
     def __init__(self, data):
         super(SeqLabel, self).__init__()
         self.use_crf = data.use_crf
-        print("build sequence labeling network...")
-        print("use_char: ", data.use_char)
+        logging.info("build sequence labeling network...")
+        logging.info("use_char: %s" % data.use_char)
         if data.use_char:
-            print("char feature extractor: ", data.char_feature_extractor)
-        print("word feature extractor: ", data.word_feature_extractor)
-        print("use crf: ", self.use_crf)
+            logging.info("char feature extractor: %s" % data.char_feature_extractor)
+        logging.info("word feature extractor: %s" % data.word_feature_extractor)
+        logging.info("use crf: %s" % self.use_crf)
 
         self.gpu = data.HP_gpu
         self.average_batch = data.average_batch_loss
@@ -82,7 +83,7 @@ class SeqLabel(nn.Module):
     def decode_nbest(self, word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                      char_seq_recover, mask, nbest):
         if not self.use_crf:
-            print("Nbest output is currently supported only for CRF! Exit...")
+            logging.info("Nbest output is currently supported only for CRF! Exit...")
             exit(0)
         outs = self.word_hidden(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                                 char_seq_recover)

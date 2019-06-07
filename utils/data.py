@@ -6,6 +6,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import sys
+import logging
 from .alphabet import Alphabet
 from .functions import *
 
@@ -33,6 +34,8 @@ class Data:
         self.feature_name = []
         self.feature_alphabets = []
         self.feature_num = len(self.feature_alphabets)
+        # self.feature_num_in_config = 0
+        self.feature_names_used = list([])
         self.feat_config = None
 
         self.label_alphabet = Alphabet('label', True)
@@ -77,9 +80,10 @@ class Data:
         self.feature_emb_dims = []
         self.norm_feature_embs = []
         self.word_emb_dim = 50
+        self.total_word_emb_dim = 50
         self.char_emb_dim = 30
 
-        #Networks
+        # Networks
         self.word_feature_extractor = "LSTM"  # "LSTM"/"CNN"/"GRU"/
         self.use_char = True
         self.char_feature_extractor = "CNN"  # "LSTM"/"CNN"/"GRU"/None
@@ -108,80 +112,89 @@ class Data:
         self.HP_l2 = 1e-8
 
     def show_data_summary(self):
-
-        print("++" * 50)
-        print("DATA SUMMARY START:")
-        print(" I/O:")
+        logging.info("++" * 50)
+        logging.info("DATA SUMMARY START:")
+        logging.info(" I/O:")
         if self.sentence_classification:
-            print("     Start Sentence Classification task...")
+            logging.info("     Start Sentence Classification task...")
         else:
-            print("     Start   Sequence   Laebling   task...")
-        print("     Tag          scheme: %s" % (self.tagScheme))
-        print("     Split         token: %s" % (self.split_token))
-        print("     MAX SENTENCE LENGTH: %s" % (self.MAX_SENTENCE_LENGTH))
-        print("     MAX   WORD   LENGTH: %s" % (self.MAX_WORD_LENGTH))
-        print("     Number   normalized: %s" % (self.number_normalized))
-        print("     Word  alphabet size: %s" % (self.word_alphabet_size))
-        print("     Char  alphabet size: %s" % (self.char_alphabet_size))
-        print("     Label alphabet size: %s" % (self.label_alphabet_size))
-        print("     Word embedding  dir: %s" % (self.word_emb_dir))
-        print("     Char embedding  dir: %s" % (self.char_emb_dir))
-        print("     Word embedding size: %s" % (self.word_emb_dim))
-        print("     Char embedding size: %s" % (self.char_emb_dim))
-        print("     Norm   word     emb: %s" % (self.norm_word_emb))
-        print("     Norm   char     emb: %s" % (self.norm_char_emb))
-        print("     Train  file directory: %s" % (self.train_dir))
-        print("     Dev    file directory: %s" % (self.dev_dir))
-        print("     Test   file directory: %s" % (self.test_dir))
-        print("     Raw    file directory: %s" % (self.raw_dir))
-        print("     Dset   file directory: %s" % (self.dset_dir))
-        print("     Model  file directory: %s" % (self.model_dir))
-        print("     Loadmodel   directory: %s" % (self.load_model_dir))
-        print("     Decode file directory: %s" % (self.decode_dir))
-        print("     Train instance number: %s" % (len(self.train_texts)))
-        print("     Dev   instance number: %s" % (len(self.dev_texts)))
-        print("     Test  instance number: %s" % (len(self.test_texts)))
-        print("     Raw   instance number: %s" % (len(self.raw_texts)))
-        print("     FEATURE num: %s" % (self.feature_num))
+            logging.info("     Start   Sequence   Laebling   task...")
+        logging.info("     Tag          scheme: %s" % (self.tagScheme))
+        logging.info("     Split         token: %s" % (self.split_token))
+        logging.info("     MAX SENTENCE LENGTH: %s" % (self.MAX_SENTENCE_LENGTH))
+        logging.info("     MAX   WORD   LENGTH: %s" % (self.MAX_WORD_LENGTH))
+        logging.info("     Number   normalized: %s" % (self.number_normalized))
+        logging.info("     Word  alphabet size: %s" % (self.word_alphabet_size))
+        logging.info("     Char  alphabet size: %s" % (self.char_alphabet_size))
+        logging.info("     Label alphabet size: %s" % (self.label_alphabet_size))
+        logging.info("     Word embedding  dir: %s" % (self.word_emb_dir))
+        logging.info("     Char embedding  dir: %s" % (self.char_emb_dir))
+        logging.info("     Word embedding size: %s" % (self.word_emb_dim))
+        logging.info("     Char embedding size: %s" % (self.char_emb_dim))
+        logging.info("     Norm   word     emb: %s" % (self.norm_word_emb))
+        logging.info("     Norm   char     emb: %s" % (self.norm_char_emb))
+        logging.info("     Train  file directory: %s" % (self.train_dir))
+        logging.info("     Dev    file directory: %s" % (self.dev_dir))
+        logging.info("     Test   file directory: %s" % (self.test_dir))
+        logging.info("     Raw    file directory: %s" % (self.raw_dir))
+        logging.info("     Dset   file directory: %s" % (self.dset_dir))
+        logging.info("     Model  file directory: %s" % (self.model_dir))
+        logging.info("     Loadmodel   directory: %s" % (self.load_model_dir))
+        logging.info("     Decode file directory: %s" % (self.decode_dir))
+        logging.info("     Train instance number: %s" % (len(self.train_texts)))
+        logging.info("     Dev   instance number: %s" % (len(self.dev_texts)))
+        logging.info("     Test  instance number: %s" % (len(self.test_texts)))
+        logging.info("     Raw   instance number: %s" % (len(self.raw_texts)))
+
+        used_feature_names = list([])
+        if self.feat_config is not None:
+            used_feature_names = list(self.feat_config.keys())
+        logging.info("     FIND FEATURE(if not set in config, use default set): %s" % (self.feature_num))
         for idx in range(self.feature_num):
-            print("         Fe: %s  alphabet  size: %s" % (
+            logging.info("         Fe: %s  alphabet  size: %s" % (
                 self.feature_alphabets[idx].name, self.feature_alphabet_sizes[idx]))
-            print(
+            logging.info(
                 "         Fe: %s  embedding  dir: %s" % (self.feature_alphabets[idx].name, self.feature_emb_dirs[idx]))
-            print(
+            logging.info(
                 "         Fe: %s  embedding size: %s" % (self.feature_alphabets[idx].name, self.feature_emb_dims[idx]))
-            print(
+            logging.info(
                 "         Fe: %s  norm       emb: %s" % (self.feature_alphabets[idx].name, self.norm_feature_embs[idx]))
-        print(" " + "++" * 20)
-        print(" Model Network:")
-        print("     Model        use_crf: %s" % (self.use_crf))
-        print("     Model word extractor: %s" % (self.word_feature_extractor))
-        print("     Model       use_char: %s" % (self.use_char))
+            if self.feature_alphabets[idx].name in used_feature_names:
+                self.feature_names_used.append(self.feature_alphabets[idx].name)
+
+        logging.info("     FEATURE used in config: Fe: %s" % ' '.join(self.feature_names_used))
+
+        # self.feature_num_in_config = len(self.feat_config)
+        logging.info(" " + "++" * 20)
+        logging.info(" Model Network:")
+        logging.info("     Model        use_crf: %s" % (self.use_crf))
+        logging.info("     Model word extractor: %s" % (self.word_feature_extractor))
+        logging.info("     Model       use_char: %s" % (self.use_char))
         if self.use_char:
-            print("     Model char extractor: %s" % (self.char_feature_extractor))
-            print("     Model char_hidden_dim: %s" % (self.HP_char_hidden_dim))
-        print(" " + "++" * 20)
-        print(" Training:")
-        print("     Optimizer: %s" % (self.optimizer))
-        print("     Iteration: %s" % (self.HP_iteration))
-        print("     BatchSize: %s" % (self.HP_batch_size))
-        print("     Average  batch   loss: %s" % (self.average_batch_loss))
+            logging.info("     Model char extractor: %s" % (self.char_feature_extractor))
+            logging.info("     Model char_hidden_dim: %s" % (self.HP_char_hidden_dim))
+        logging.info(" " + "++" * 20)
+        logging.info(" Training:")
+        logging.info("     Optimizer: %s" % (self.optimizer))
+        logging.info("     Iteration: %s" % (self.HP_iteration))
+        logging.info("     BatchSize: %s" % (self.HP_batch_size))
+        logging.info("     Average  batch   loss: %s" % (self.average_batch_loss))
 
-        print(" " + "++" * 20)
-        print(" Hyperparameters:")
+        logging.info(" " + "++" * 20)
+        logging.info(" Hyperparameters:")
 
-        print("     Hyper              lr: %s" % (self.HP_lr))
-        print("     Hyper        lr_decay: %s" % (self.HP_lr_decay))
-        print("     Hyper         HP_clip: %s" % (self.HP_clip))
-        print("     Hyper        momentum: %s" % (self.HP_momentum))
-        print("     Hyper              l2: %s" % (self.HP_l2))
-        print("     Hyper      hidden_dim: %s" % (self.HP_hidden_dim))
-        print("     Hyper         dropout: %s" % (self.HP_dropout))
-        print("     Hyper      lstm_layer: %s" % (self.HP_lstm_layer))
-        print("     Hyper          bilstm: %s" % (self.HP_bilstm))
-        print("     Hyper             GPU: %s" % (self.HP_gpu))
-        print("DATA SUMMARY END.")
-        print("++" * 50)
+        logging.info("     Hyper              lr: %s" % (self.HP_lr))
+        logging.info("     Hyper        lr_decay: %s" % (self.HP_lr_decay))
+        logging.info("     Hyper         HP_clip: %s" % (self.HP_clip))
+        logging.info("     Hyper        momentum: %s" % (self.HP_momentum))
+        logging.info("     Hyper              l2: %s" % (self.HP_l2))
+        logging.info("     Hyper      hidden_dim: %s" % (self.HP_hidden_dim))
+        logging.info("     Hyper         dropout: %s" % (self.HP_dropout))
+        logging.info("     Hyper      lstm_layer: %s" % (self.HP_lstm_layer))
+        logging.info("     Hyper          bilstm: %s" % (self.HP_bilstm))
+        logging.info("     Hyper             GPU: %s" % (self.HP_gpu))
+        logging.info("DATA SUMMARY END.")
+        logging.info("++" * 50)
         sys.stdout.flush()
 
     def initial_feature_alphabets(self):
@@ -202,7 +215,7 @@ class Data:
                 feature_prefix = items[idx].split(']', 1)[0] + "]"
                 self.feature_alphabets.append(Alphabet(feature_prefix))
                 self.feature_name.append(feature_prefix)
-                print("Find feature: ", feature_prefix)
+                # logging.info("Find feature in data: ", feature_prefix)
         self.feature_num = len(self.feature_alphabets)
         self.pretrain_feature_embeddings = [None] * self.feature_num
         self.feature_emb_dims = [20] * self.feature_num
@@ -287,49 +300,58 @@ class Data:
 
     def build_pretrain_emb(self):
         if self.word_emb_dir:
-            print("Load pretrained word embedding, norm: %s, dir: %s" % (self.norm_word_emb, self.word_emb_dir))
+            logging.info("Load pretrained word embedding, total_dim: %s, used dim: %s, norm: %s, dir: %s" %
+                         (self.total_word_emb_dim, self.word_emb_dim, self.norm_word_emb, self.word_emb_dir))
             self.pretrain_word_embedding, self.word_emb_dim = build_pretrain_embedding(self.word_emb_dir,
                                                                                        self.word_alphabet,
                                                                                        self.word_emb_dim,
+                                                                                       self.total_word_emb_dim,
                                                                                        self.norm_word_emb)
         if self.char_emb_dir:
-            print("Load pretrained char embedding, norm: %s, dir: %s" % (self.norm_char_emb, self.char_emb_dir))
+            logging.info("Load pretrained char embedding, norm: %s, dir: %s" % (self.norm_char_emb, self.char_emb_dir))
             self.pretrain_char_embedding, self.char_emb_dim = build_pretrain_embedding(self.char_emb_dir,
                                                                                        self.char_alphabet,
+                                                                                       self.char_emb_dim,
                                                                                        self.char_emb_dim,
                                                                                        self.norm_char_emb)
         for idx in range(self.feature_num):
             if self.feature_emb_dirs[idx]:
-                print("Load pretrained feature %s embedding:, norm: %s, dir: %s" % (
+                logging.info("Load pretrained feature %s embedding:, norm: %s, dir: %s" % (
                     self.feature_name[idx], self.norm_feature_embs[idx], self.feature_emb_dirs[idx]))
                 self.pretrain_feature_embeddings[idx], self.feature_emb_dims[idx] = build_pretrain_embedding(
                     self.feature_emb_dirs[idx], self.feature_alphabets[idx], self.feature_emb_dims[idx],
                     self.norm_feature_embs[idx])
 
-    def generate_instance(self, name):
+    def generate_instance(self, name, used_feature_names):
         self.fix_alphabet()
         if name == "train":
-            self.train_texts, self.train_Ids = read_instance(self.train_dir, self.word_alphabet, self.char_alphabet,
+            self.train_texts, self.train_Ids = read_instance(used_feature_names,
+                                                             self.train_dir, self.word_alphabet, self.char_alphabet,
                                                              self.feature_alphabets, self.label_alphabet,
                                                              self.number_normalized, self.MAX_SENTENCE_LENGTH,
                                                              self.sentence_classification, self.split_token)
+            # logging.info('instance=%s' % self.train_texts)
+            # logging.info(self.train_Ids)
         elif name == "dev":
-            self.dev_texts, self.dev_Ids = read_instance(self.dev_dir, self.word_alphabet, self.char_alphabet,
+            self.dev_texts, self.dev_Ids = read_instance(used_feature_names,
+                                                         self.dev_dir, self.word_alphabet, self.char_alphabet,
                                                          self.feature_alphabets, self.label_alphabet,
                                                          self.number_normalized, self.MAX_SENTENCE_LENGTH,
                                                          self.sentence_classification, self.split_token)
         elif name == "test":
-            self.test_texts, self.test_Ids = read_instance(self.test_dir, self.word_alphabet, self.char_alphabet,
+            self.test_texts, self.test_Ids = read_instance(used_feature_names,
+                                                           self.test_dir, self.word_alphabet, self.char_alphabet,
                                                            self.feature_alphabets, self.label_alphabet,
                                                            self.number_normalized, self.MAX_SENTENCE_LENGTH,
                                                            self.sentence_classification, self.split_token)
         elif name == "raw":
-            self.raw_texts, self.raw_Ids = read_instance(self.raw_dir, self.word_alphabet, self.char_alphabet,
+            self.raw_texts, self.raw_Ids = read_instance(used_feature_names,
+                                                         self.raw_dir, self.word_alphabet, self.char_alphabet,
                                                          self.feature_alphabets, self.label_alphabet,
                                                          self.number_normalized, self.MAX_SENTENCE_LENGTH,
                                                          self.sentence_classification, self.split_token)
         else:
-            print("Error: you can only generate train/dev/test instance! Illegal input:%s" % (name))
+            logging.info("Error: you can only generate train/dev/test instance! Illegal input:%s" % name)
 
     def write_decoded_results(self, predict_results, name):
 
@@ -344,7 +366,8 @@ class Data:
         elif name == 'train':
             content_list = self.train_texts
         else:
-            print("Error: illegal name during writing predict result, name should be within train/dev/test/raw !")
+            logging.info(
+                "Error: illegal name during writing predict result, name should be within train/dev/test/raw !")
         assert (sent_num == len(content_list))
         fout = open(self.decode_dir, 'w')
         for idx in range(sent_num):
@@ -357,7 +380,7 @@ class Data:
                     fout.write(content_list[idx][0][idy].encode('utf-8') + " " + predict_results[idx][idy] + '\n')
                 fout.write('\n')
         fout.close()
-        print("Predict %s result has been written into file. %s" % (name, self.decode_dir))
+        logging.info("Predict %s result has been written into file. %s" % (name, self.decode_dir))
 
     def load(self, data_file):
         f = open(data_file, 'rb')
@@ -371,8 +394,6 @@ class Data:
         f.close()
 
     def write_nbest_decoded_results(self, predict_results, pred_scores, name):
-        # predict_results : [whole_sent_num, nbest, each_sent_length]
-        # pred_scores: [whole_sent_num, nbest]
         fout = open(self.decode_dir, 'w')
         sent_num = len(predict_results)
         content_list = []
@@ -385,7 +406,8 @@ class Data:
         elif name == 'train':
             content_list = self.train_texts
         else:
-            print("Error: illegal name during writing predict result, name should be within train/dev/test/raw !")
+            logging.info(
+                "Error: illegal name during writing predict result, name should be within train/dev/test/raw !")
         assert (sent_num == len(content_list))
         assert (sent_num == len(pred_scores))
         for idx in range(sent_num):
@@ -401,14 +423,14 @@ class Data:
                     label_string = content_list[idx][0][idy].encode('utf-8') + " "
                 except:
                     label_string = content_list[idx][0][idy] + " "
-                # print('label_string %s' % label_string)
+                # logging.info('label_string %s' % label_string)
                 for idz in range(nbest):
                     label_string += predict_results[idx][idz][idy] + " "
                 label_string = label_string.strip() + "\n"
                 fout.write(label_string)
             fout.write('\n')
         fout.close()
-        print("Predict %s %s-best result has been written into file. %s" % (name, nbest, self.decode_dir))
+        logging.info("Predict %s %s-best result has been written into file. %s" % (name, nbest, self.decode_dir))
 
     def read_config(self, config_file):
         config = config_file_to_dict(config_file)
@@ -471,6 +493,9 @@ class Data:
         the_item = 'word_emb_dim'
         if the_item in config:
             self.word_emb_dim = int(config[the_item])
+        the_item = 'total_word_emb_dim'
+        if the_item in config:
+            self.total_word_emb_dim = int(config[the_item])
         the_item = 'char_emb_dim'
         if the_item in config:
             self.char_emb_dim = int(config[the_item])
@@ -495,6 +520,7 @@ class Data:
         the_item = 'feature'
         if the_item in config:
             self.feat_config = config[the_item]  # feat_config is a dict
+            # logging.info('=======feature', self.feat_config)
 
         # read training setting:
         the_item = 'optimizer'
@@ -591,7 +617,7 @@ def config_file_to_dict(input_file):
                 # print "feat",feat_dict
             else:
                 if item in config:
-                    print("Warning: duplicated config item found: %s, updated." % (pair[0]))
+                    logging.info("Warning: duplicated config item found: %s, updated." % (pair[0]))
                 config[item] = pair[-1]
 
     return config

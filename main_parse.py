@@ -53,7 +53,7 @@ def predict_check(pred_variable, gold_variable, mask_variable):
     overlaped = (pred == gold)
     right_token = np.sum(overlaped * mask)
     total_token = mask.sum()
-    # print("right: %s, total: %s"%(right_token, total_token))
+    # logging.info("right: %s, total: %s"%(right_token, total_token))
     return right_token, total_token
 
 
@@ -79,8 +79,8 @@ def recover_label(pred_variable, gold_variable, mask_variable, label_alphabet, w
     for idx in range(batch_size):
         pred = [label_alphabet.get_instance(pred_tag[idx][idy]) for idy in range(seq_len) if mask[idx][idy] != 0]
         gold = [label_alphabet.get_instance(gold_tag[idx][idy]) for idy in range(seq_len) if mask[idx][idy] != 0]
-        # print("p:",pred, pred_tag.tolist())
-        # print("g:", gold, gold_tag.tolist())
+        # logging.info("p:",pred, pred_tag.tolist())
+        # logging.info("g:", gold, gold_tag.tolist())
         assert(len(pred)==len(gold))
         pred_label.append(pred)
         gold_label.append(gold)
@@ -96,13 +96,13 @@ def recover_nbest_label(pred_variable, mask_variable, label_alphabet, word_recov
         output:
             nbest_pred_label list: [batch_size, nbest, each_seq_len]
     """
-    # print("word recover:", word_recover.size())
+    # logging.info("word recover:", word_recover.size())
     # exit(0)
     pred_variable = pred_variable[word_recover]
     mask_variable = mask_variable[word_recover]
     batch_size = pred_variable.size(0)
     seq_len = pred_variable.size(1)
-    print(pred_variable.size())
+    logging.info(pred_variable.size())
     nbest = pred_variable.size(2)
     mask = mask_variable.cpu().data.numpy()
     pred_tag = pred_variable.cpu().data.numpy()
@@ -133,19 +133,19 @@ def recover_nbest_label(pred_variable, mask_variable, label_alphabet, word_recov
 #     ## save data settings
 #     with open(save_file, 'w') as fp:
 #         pickle.dump(new_data, fp)
-#     print("Data setting saved to file: ", save_file)
+#     logging.info("Data setting saved to file: ", save_file)
 
 
 # def load_data_setting(save_file):
 #     with open(save_file, 'r') as fp:
 #         data = pickle.load(fp)
-#     print("Data setting loaded from file: ", save_file)
+#     logging.info("Data setting loaded from file: ", save_file)
 #     data.show_data_summary()
 #     return data
 
 def lr_decay(optimizer, epoch, decay_rate, init_lr):
     lr = init_lr/(1+decay_rate*epoch)
-    print(" Learning rate is set as:", lr)
+    logging.info(" Learning rate is set as:", lr)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
     return optimizer
@@ -162,7 +162,7 @@ def evaluate(data, model, name, nbest=None):
     elif name == 'raw':
         instances = data.raw_Ids
     else:
-        print("Error: wrong evaluate name,", name)
+        logging.info("Error: wrong evaluate name,", name)
     right_token = 0
     whole_token = 0
     nbest_pred_results = []
@@ -193,7 +193,7 @@ def evaluate(data, model, name, nbest=None):
             tag_seq = nbest_tag_seq[:,:,0]
         else:
             tag_seq = model(batch_word, batch_features, batch_wordlen, batch_char, batch_charlen, batch_charrecover, mask)
-        # print("tag:",tag_seq)
+        # logging.info("tag:",tag_seq)
         pred_label, gold_label = recover_label(tag_seq, batch_label, mask, data.label_alphabet, batch_wordrecover)
         pred_results += pred_label
         gold_results += gold_label
@@ -279,7 +279,7 @@ def batchify_with_label(input_batch_list, gpu, volatile_flag=False):
 
 
 def train(data):
-    print("Training model...")
+    logging.info("Training model...")
     data.show_data_summary()
     save_data_name = data.model_dir +".dset"
     data.save(save_data_name)
@@ -296,7 +296,7 @@ def train(data):
     elif data.optimizer.lower() == "adam":
         optimizer = optim.Adam(model.parameters(), lr=data.HP_lr, weight_decay=data.HP_l2)
     else:
-        print("Optimizer illegal: %s"%(data.optimizer))
+        logging.info("Optimizer illegal: %s"%(data.optimizer))
         exit(0)
     best_dev = -10
     # data.HP_iteration = 1
@@ -304,7 +304,7 @@ def train(data):
     for idx in range(data.HP_iteration):
         epoch_start = time.time()
         temp_start = epoch_start
-        print("Epoch: %s/%s" %(idx,data.HP_iteration))
+        logging.info("Epoch: %s/%s" %(idx,data.HP_iteration))
         if data.optimizer == "SGD":
             optimizer = lr_decay(optimizer, idx, data.HP_lr_decay, data.HP_lr)
         instance_count = 0
@@ -341,7 +341,7 @@ def train(data):
                 temp_time = time.time()
                 temp_cost = temp_time - temp_start
                 temp_start = temp_time
-                print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f"%(end, temp_cost, sample_loss, right_token, whole_token,(right_token+0.)/whole_token))
+                logging.info("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f"%(end, temp_cost, sample_loss, right_token, whole_token,(right_token+0.)/whole_token))
                 sys.stdout.flush()
                 sample_loss = 0
             loss.backward()
@@ -349,10 +349,10 @@ def train(data):
             model.zero_grad()
         temp_time = time.time()
         temp_cost = temp_time - temp_start
-        print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f"%(end, temp_cost, sample_loss, right_token, whole_token,(right_token+0.)/whole_token))       
+        logging.info("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f"%(end, temp_cost, sample_loss, right_token, whole_token,(right_token+0.)/whole_token))       
         epoch_finish = time.time()
         epoch_cost = epoch_finish - epoch_start
-        print("Epoch: %s training finished. Time: %.2fs, speed: %.2fst/s,  total loss: %s"%(idx, epoch_cost, train_num/epoch_cost, total_loss))
+        logging.info("Epoch: %s training finished. Time: %.2fs, speed: %.2fst/s,  total loss: %s"%(idx, epoch_cost, train_num/epoch_cost, total_loss))
         # continue
         speed, acc, p, r, f, _,_ = evaluate(data, model, "dev")
         dev_finish = time.time()
@@ -360,18 +360,18 @@ def train(data):
 
         if data.seg:
             current_score = f
-            print("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(dev_cost, speed, acc, p, r, f))
+            logging.info("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(dev_cost, speed, acc, p, r, f))
         else:
             current_score = acc
-            print("Dev: time: %.2fs speed: %.2fst/s; acc: %.4f"%(dev_cost, speed, acc))
+            logging.info("Dev: time: %.2fs speed: %.2fst/s; acc: %.4f"%(dev_cost, speed, acc))
 
         if current_score > best_dev:
             if data.seg:
-                print("Exceed previous best f score:", best_dev)
+                logging.info("Exceed previous best f score:", best_dev)
             else:
-                print("Exceed previous best acc score:", best_dev)
+                logging.info("Exceed previous best acc score:", best_dev)
             model_name = data.model_dir +'.'+ str(idx) + ".model"
-            print("Save current best model in file:", model_name)
+            logging.info("Save current best model in file:", model_name)
             torch.save(model.state_dict(), model_name)
             best_dev = current_score 
         # ## decode test
@@ -379,14 +379,14 @@ def train(data):
         test_finish = time.time()
         test_cost = test_finish - dev_finish
         if data.seg:
-            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(test_cost, speed, acc, p, r, f))
+            logging.info("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(test_cost, speed, acc, p, r, f))
         else:
-            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f"%(test_cost, speed, acc))
+            logging.info("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f"%(test_cost, speed, acc))
         gc.collect() 
 
 
 def load_model_decode(data, name):
-    print("Load Model from file: ", data.model_dir)
+    logging.info("Load Model from file: ", data.model_dir)
     model = SeqLabel(data)
     ## load model need consider if the model trained in GPU and load in CPU, or vice versa
     # if not gpu:
@@ -398,15 +398,15 @@ def load_model_decode(data, name):
     #     # model = torch.load(model_dir)
     model.load_state_dict(torch.load(data.load_model_dir))
 
-    print("Decode %s data, nbest: %s ..."%(name, data.nbest))
+    logging.info("Decode %s data, nbest: %s ..."%(name, data.nbest))
     start_time = time.time()
     speed, acc, p, r, f, pred_results, pred_scores = evaluate(data, model, name, data.nbest)
     end_time = time.time()
     time_cost = end_time - start_time
     if data.seg:
-        print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(name, time_cost, speed, acc, p, r, f))
+        logging.info("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f"%(name, time_cost, speed, acc, p, r, f))
     else:
-        print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f"%(name, time_cost, speed, acc))
+        logging.info("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f"%(name, time_cost, speed, acc))
     return pred_results, pred_scores
 
 
@@ -434,16 +434,16 @@ if __name__ == '__main__':
     data.test_dir = args.test
     data.model_dir = args.savemodel
     data.dset_dir = args.savedset
-    print("aaa",data.dset_dir)
+    logging.info("aaa",data.dset_dir)
     status = args.status.lower()
     save_model_dir = args.savemodel
     data.HP_gpu = torch.cuda.is_available()
-    print("Seed num:",seed_num)
+    logging.info("Seed num:",seed_num)
     data.number_normalized = True
     data.word_emb_dir = "../data/glove.6B.100d.txt"
     
     if status == 'train':
-        print("MODEL: train")
+        logging.info("MODEL: train")
         data_initialization(data)
         data.use_char = True
         data.HP_batch_size = 10
@@ -455,21 +455,21 @@ if __name__ == '__main__':
         data.build_pretrain_emb()
         train(data)
     elif status == 'decode':   
-        print("MODEL: decode")
+        logging.info("MODEL: decode")
         data.load(data.dset_dir)    
         data.raw_dir = args.raw
         data.decode_dir = args.output
         data.load_model_dir = args.loadmodel
         data.show_data_summary()
         data.generate_instance('raw')
-        print("nbest: %s"%(data.nbest))
+        logging.info("nbest: %s"%(data.nbest))
         decode_results, pred_scores = load_model_decode(data, 'raw')
         if data.nbest:
             data.write_nbest_decoded_results(decode_results, pred_scores, 'raw')
         else:
             data.write_decoded_results(decode_results, 'raw')
     else:
-        print("Invalid argument! Please use valid arguments! (train/test/decode)")
+        logging.info("Invalid argument! Please use valid arguments! (train/test/decode)")
 
 
 

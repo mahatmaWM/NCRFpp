@@ -11,6 +11,7 @@ import argparse
 import random
 import torch
 import gc
+import logging
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
@@ -18,6 +19,7 @@ from utils.metric import get_ner_fmeasure
 from model.seqlabel import SeqLabel
 from model.sentclassifier import SentClassifier
 from utils.data import Data
+import utils.utils as utils
 
 try:
     import cPickle as pickle
@@ -55,7 +57,7 @@ def predict_check(pred_variable, gold_variable, mask_variable, sentence_classifi
     else:
         right_token = np.sum(overlaped * mask)
         total_token = mask.sum()
-    # print("right: %s, total: %s"%(right_token, total_token))
+    # logging.info("right: %s, total: %s"%(right_token, total_token))
     return right_token, total_token
 
 
@@ -132,7 +134,7 @@ def lr_decay(optimizer, epoch, decay_rate, init_lr):
     :return:
     """
     lr = init_lr / (1 + decay_rate * epoch)
-    print(" Learning rate is set as:", lr)
+    logging.info(" Learning rate is set as:", lr)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
     return optimizer
@@ -148,7 +150,7 @@ def evaluate(data, model, name, nbest=None):
     elif name == 'raw':
         instances = data.raw_Ids
     else:
-        print("Error: wrong evaluate name,", name)
+        logging.info("Error: wrong evaluate name,", name)
         exit(1)
     right_token = 0
     whole_token = 0
@@ -186,7 +188,7 @@ def evaluate(data, model, name, nbest=None):
         else:
             tag_seq = model(batch_word, batch_features, batch_wordlen, batch_char, batch_charlen, batch_charrecover,
                             mask)
-        # print("tag:",tag_seq)
+        # logging.info("tag:",tag_seq)
         pred_label, gold_label = recover_label(tag_seq, batch_label, mask, data.label_alphabet, batch_wordrecover,
                                                data.sentence_classification)
         pred_results += pred_label
@@ -229,6 +231,7 @@ def batchify_sequence_labeling_with_label(input_batch_list, gpu, if_train=True):
     """
 
     # 从input_batch_list里面转化为下面的格式，第一维为batch_size
+    # logging.info(input_batch_list)
     batch_size = len(input_batch_list)
     words = [sent[0] for sent in input_batch_list]
     features = [np.asarray(sent[1]) for sent in input_batch_list]
@@ -286,6 +289,15 @@ def batchify_sequence_labeling_with_label(input_batch_list, gpu, if_train=True):
         char_seq_tensor = char_seq_tensor.cuda()
         char_seq_recover = char_seq_recover.cuda()
         mask = mask.cuda()
+    # logging.info(word_seq_tensor)
+    # logging.info(feature_seq_tensors)
+    # logging.info(word_seq_lengths)
+    # logging.info(word_seq_recover)
+    # logging.info(char_seq_tensor)
+    # logging.info(char_seq_lengths)
+    # logging.info(char_seq_recover)
+    # logging.info(label_seq_tensor)
+    # logging.info(mask)
     return word_seq_tensor, feature_seq_tensors, word_seq_lengths, word_seq_recover, char_seq_tensor, \
            char_seq_lengths, char_seq_recover, label_seq_tensor, mask
 
@@ -371,7 +383,7 @@ def batchify_sentence_classification_with_label(input_batch_list, gpu, if_train=
 
 
 def train(data):
-    print("Training model...")
+    logging.info("Training model...")
     data.show_data_summary()
     save_data_name = data.model_dir + ".dset"
     data.save(save_data_name)
@@ -392,7 +404,7 @@ def train(data):
     elif data.optimizer.lower() == "adam":
         optimizer = optim.Adam(model.parameters(), lr=data.HP_lr, weight_decay=data.HP_l2)
     else:
-        print("Optimizer illegal: %s" % (data.optimizer))
+        logging.info("Optimizer illegal: %s" % (data.optimizer))
         exit(1)
 
     best_dev = -10
@@ -400,7 +412,7 @@ def train(data):
     for idx in range(data.HP_iteration):
         epoch_start = time.time()
         temp_start = epoch_start
-        print("Epoch: %s/%s" % (idx, data.HP_iteration))
+        logging.info("Epoch: %s/%s" % (idx, data.HP_iteration))
         if data.optimizer == "SGD":
             optimizer = lr_decay(optimizer, idx, data.HP_lr_decay, data.HP_lr)
         instance_count = 0
@@ -410,7 +422,7 @@ def train(data):
         right_token = 0
         whole_token = 0
         random.shuffle(data.train_Ids)
-        print("Shuffle: first input word list:", data.train_Ids[0][0])
+        logging.info("Shuffle: first input word list:%s" % data.train_Ids[0][0])
 
         # set model in train model
         model.train()
@@ -440,17 +452,17 @@ def train(data):
             right, whole = predict_check(tag_seq, batch_label, mask, data.sentence_classification)
             right_token += right
             whole_token += whole
-            # print("loss:",loss.item())
+            # logging.info("loss:",loss.item())
             sample_loss += loss.item()
             total_loss += loss.item()
             if end % 50000 == 0:
                 temp_time = time.time()
                 temp_cost = temp_time - temp_start
                 temp_start = temp_time
-                print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
+                logging.info("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
                     end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
                 if sample_loss > 1e8 or str(sample_loss) == "nan":
-                    print("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
+                    logging.info("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
                     exit(1)
                 sys.stdout.flush()
                 sample_loss = 0
@@ -459,16 +471,16 @@ def train(data):
             model.zero_grad()
         temp_time = time.time()
         temp_cost = temp_time - temp_start
-        print("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
+        logging.info("     Instance: %s; Time: %.2fs; loss: %.4f; acc: %s/%s=%.4f" % (
             end, temp_cost, sample_loss, right_token, whole_token, (right_token + 0.) / whole_token))
 
         epoch_finish = time.time()
         epoch_cost = epoch_finish - epoch_start
-        print("Epoch: %s training finished. Time: %.2fs, speed: %.2fst/s,  total loss: %s" % (
+        logging.info("Epoch: %s training finished. Time: %.2fs, speed: %.2fst/s,  total loss: %s" % (
             idx, epoch_cost, train_num / epoch_cost, total_loss))
-        print("totalloss:", total_loss)
+        logging.info("totalloss: %s" % total_loss)
         if total_loss > 1e8 or str(total_loss) == "nan":
-            print("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
+            logging.info("ERROR: LOSS EXPLOSION (>1e8) ! PLEASE SET PROPER PARAMETERS AND STRUCTURE! EXIT....")
             exit(1)
         # continue
         speed, acc, p, r, f, _, _ = evaluate(data, model, "dev")
@@ -477,19 +489,19 @@ def train(data):
 
         if data.seg:
             current_score = f
-            print("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
+            logging.info("Dev: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
                 dev_cost, speed, acc, p, r, f))
         else:
             current_score = acc
-            print("Dev: time: %.2fs speed: %.2fst/s; acc: %.4f" % (dev_cost, speed, acc))
+            logging.info("Dev: time: %.2fs speed: %.2fst/s; acc: %.4f" % (dev_cost, speed, acc))
 
         if current_score > best_dev:
             if data.seg:
-                print("Exceed previous best f score:", best_dev)
+                logging.info("Exceed previous best f score: %s" % best_dev)
             else:
-                print("Exceed previous best acc score:", best_dev)
+                logging.info("Exceed previous best acc score:%s" % best_dev)
             model_name = data.model_dir + '.' + str(idx) + ".model"
-            print("Save current best model in file:", model_name)
+            logging.info("Save current best model in file: %s" % model_name)
             torch.save(model.state_dict(), model_name)
             best_dev = current_score
         # decode test
@@ -497,15 +509,15 @@ def train(data):
         test_finish = time.time()
         test_cost = test_finish - dev_finish
         if data.seg:
-            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
+            logging.info("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
                 test_cost, speed, acc, p, r, f))
         else:
-            print("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f" % (test_cost, speed, acc))
+            logging.info("Test: time: %.2fs, speed: %.2fst/s; acc: %.4f" % (test_cost, speed, acc))
         gc.collect()
 
 
 def load_model_decode(data, name):
-    print("Load Model from file: ", data.model_dir)
+    logging.info("Load Model from file: ", data.model_dir)
     if data.sentence_classification:
         model = SentClassifier(data)
     else:
@@ -521,20 +533,21 @@ def load_model_decode(data, name):
     #     # model = torch.load(model_dir)
     model.load_state_dict(torch.load(data.load_model_dir))
 
-    print("Decode %s data, nbest: %s ..." % (name, data.nbest))
+    logging.info("Decode %s data, nbest: %s ..." % (name, data.nbest))
     start_time = time.time()
     speed, acc, p, r, f, pred_results, pred_scores = evaluate(data, model, name, data.nbest)
     end_time = time.time()
     time_cost = end_time - start_time
     if data.seg:
-        print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
+        logging.info("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f, p: %.4f, r: %.4f, f: %.4f" % (
             name, time_cost, speed, acc, p, r, f))
     else:
-        print("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f" % (name, time_cost, speed, acc))
+        logging.info("%s: time:%.2fs, speed:%.2fst/s; acc: %.4f" % (name, time_cost, speed, acc))
     return pred_results, pred_scores
 
 
 if __name__ == '__main__':
+    utils.configure_logging()
     parser = argparse.ArgumentParser(description='Tuning with NCRF++')
     # parser.add_argument('--status', choices=['train', 'decode'], help='update algorithm', default='train')
     parser.add_argument('--config', help='Configuration File')
@@ -543,31 +556,37 @@ if __name__ == '__main__':
     data = Data()
     data.HP_gpu = torch.cuda.is_available()
     data.read_config(args.config)
-    data.show_data_summary()
     status = data.status.lower()
-    print("Seed num:", seed_num)
+    logging.info("Seed num:%s" % seed_num)
 
     if status == 'train':
-        print("MODEL: train")
+        logging.info("MODEL: train")
         data_initialization(data)
-        data.generate_instance('train')
-        data.generate_instance('dev')
-        data.generate_instance('test')
+        used_feature_names = list([])
+        if data.feat_config is not None:
+            used_feature_names = list(data.feat_config.keys())
+        # logging.info('used_feature_names=%s' % used_feature_names)
+
+        data.generate_instance('train', used_feature_names)
+        data.generate_instance('dev', used_feature_names)
+        data.generate_instance('test', used_feature_names)
+
         data.build_pretrain_emb()
+        # exit(0)
         train(data)
     elif status == 'decode':
-        print("MODEL: decode")
+        logging.info("MODEL: decode")
         data.load(data.dset_dir)
         data.read_config(args.config)
-        print(data.raw_dir)
+        logging.info(data.raw_dir)
         # exit(0)
         data.show_data_summary()
         data.generate_instance('raw')
-        print("nbest: %s" % (data.nbest))
+        logging.info("nbest: %s" % (data.nbest))
         decode_results, pred_scores = load_model_decode(data, 'raw')
         if data.nbest and not data.sentence_classification:
             data.write_nbest_decoded_results(decode_results, pred_scores, 'raw')
         else:
             data.write_decoded_results(decode_results, 'raw')
     else:
-        print("Invalid argument! Please use valid arguments! (train/test/decode)")
+        logging.info("Invalid argument! Please use valid arguments! (train/test/decode)")

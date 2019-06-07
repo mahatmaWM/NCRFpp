@@ -10,12 +10,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from .wordrep import WordRep
+import logging
 
 
 class WordSequence(nn.Module):
     def __init__(self, data):
         super(WordSequence, self).__init__()
-        print("build word sequence feature extractor: %s..." % (data.word_feature_extractor))
+        logging.info("build word sequence feature extractor: %s..." % (data.word_feature_extractor))
         self.gpu = data.HP_gpu
         self.use_char = data.use_char
         # self.batch_size = data.HP_batch_size
@@ -24,6 +25,7 @@ class WordSequence(nn.Module):
         self.bilstm_flag = data.HP_bilstm
         self.lstm_layer = data.HP_lstm_layer
         self.wordrep = WordRep(data)
+        # logging.info('word emb dim: %s' % data.word_emb_dim)
         self.input_size = data.word_emb_dim
         self.feature_num = data.feature_num
         if self.use_char:
@@ -31,7 +33,8 @@ class WordSequence(nn.Module):
             if data.char_feature_extractor == "ALL":
                 self.input_size += data.HP_char_hidden_dim
         for idx in range(self.feature_num):
-            self.input_size += data.feature_emb_dims[idx]
+            if data.feature_alphabets[idx].name in data.feature_names_used:
+                self.input_size += data.feature_emb_dims[idx]
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
@@ -45,13 +48,14 @@ class WordSequence(nn.Module):
             self.lstm = nn.GRU(self.input_size, lstm_hidden, num_layers=self.lstm_layer, batch_first=True,
                                bidirectional=self.bilstm_flag)
         elif self.word_feature_extractor == "LSTM":
+            # logging.info(self.input_size)
             self.lstm = nn.LSTM(self.input_size, lstm_hidden, num_layers=self.lstm_layer, batch_first=True,
                                 bidirectional=self.bilstm_flag)
         elif self.word_feature_extractor == "CNN":
             # cnn_hidden = data.HP_hidden_dim
             self.word2cnn = nn.Linear(self.input_size, data.HP_hidden_dim)
             self.cnn_layer = data.HP_cnn_layer
-            print("CNN layer: ", self.cnn_layer)
+            logging.info("CNN layer: ", self.cnn_layer)
             self.cnn_list = nn.ModuleList()
             self.cnn_drop_list = nn.ModuleList()
             self.cnn_batchnorm_list = nn.ModuleList()
@@ -92,6 +96,8 @@ class WordSequence(nn.Module):
 
         word_represent = self.wordrep(word_inputs, feature_inputs, word_seq_lengths, char_inputs, char_seq_lengths,
                                       char_seq_recover)
+        # logging.info(word_represent)
+
         # word_embs (batch_size, seq_len, embed_size)
         if self.word_feature_extractor == "CNN":
             batch_size = word_inputs.size(0)
@@ -106,8 +112,10 @@ class WordSequence(nn.Module):
                     cnn_feature = self.cnn_batchnorm_list[idx](cnn_feature)
             feature_out = cnn_feature.transpose(2, 1).contiguous()
         else:
+            # logging.info(word_seq_lengths.cpu().numpy())
             packed_words = pack_padded_sequence(word_represent, word_seq_lengths.cpu().numpy(), True)
             hidden = None
+            # logging.info(packed_words)
             lstm_out, hidden = self.lstm(packed_words, hidden)
             lstm_out, _ = pad_packed_sequence(lstm_out)
             # lstm_out (seq_len, seq_len, hidden_size)

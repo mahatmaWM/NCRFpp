@@ -14,7 +14,7 @@ import sys
 
 
 def BIO2BIOES(input_file, output_file):
-    print("Convert BIO -> BIOES for file:", input_file)
+    logging.info("Convert BIO -> BIOES for file:", input_file)
     with open(input_file, 'r') as in_file:
         fins = in_file.readlines()
     fout = open(output_file, 'w')
@@ -46,11 +46,11 @@ def BIO2BIOES(input_file, output_file):
             words.append(pair[0])
             labels.append(pair[-1].upper())
     fout.close()
-    print("BIOES file generated:", output_file)
+    logging.info("BIOES file generated:", output_file)
 
 
 def BIOES2BIO(input_file, output_file):
-    print("Convert BIOES -> BIO for file:", input_file)
+    logging.info("Convert BIOES -> BIO for file:", input_file)
     with open(input_file, 'r') as in_file:
         fins = in_file.readlines()
     fout = open(output_file, 'w')
@@ -78,11 +78,11 @@ def BIOES2BIO(input_file, output_file):
             words.append(pair[0])
             labels.append(pair[-1].upper())
     fout.close()
-    print("BIO file generated:", output_file)
+    logging.info("BIO file generated:", output_file)
 
 
 def IOB2BIO(input_file, output_file):
-    print("Convert IOB -> BIO for file:", input_file)
+    logging.info("Convert IOB -> BIO for file:", input_file)
     with open(input_file, 'r') as in_file:
         fins = in_file.readlines()
     fout = open(output_file, 'w')
@@ -108,7 +108,7 @@ def IOB2BIO(input_file, output_file):
             words.append(pair[0])
             labels.append(pair[-1].upper())
     fout.close()
-    print("BIO file generated:", output_file)
+    logging.info("BIO file generated:", output_file)
 
 
 def choose_label(input_file, output_file):
@@ -139,4 +139,4 @@ if __name__ == '__main__':
         IOB2BIO(sys.argv[2], "temp")
         BIO2BIOES("temp", sys.argv[3])
     else:
-        print("Argument error: sys.argv[1] should belongs to \"IOB2BIO/BIO2BIOES/BIOES2BIO/IOB2BIOES\"")
+        logging.info("Argument error: sys.argv[1] should belongs to \"IOB2BIO/BIO2BIOES/BIOES2BIO/IOB2BIOES\"")

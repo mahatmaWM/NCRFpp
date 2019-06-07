@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .wordsequence import WordSequence
+import logging
 
 
 class SentClassifier(nn.Module):
@@ -19,11 +20,11 @@ class SentClassifier(nn.Module):
 
     def __init__(self, data):
         super(SentClassifier, self).__init__()
-        print("build sentence classification network...")
-        print("use_char: ", data.use_char)
+        logging.info("build sentence classification network...")
+        logging.info("use_char: ", data.use_char)
         if data.use_char:
-            print("char feature extractor: ", data.char_feature_extractor)
-        print("word feature extractor: ", data.word_feature_extractor)
+            logging.info("char feature extractor: ", data.char_feature_extractor)
+        logging.info("word feature extractor: ", data.word_feature_extractor)
 
         self.gpu = data.HP_gpu
         self.average_batch = data.average_batch_loss
@@ -37,11 +38,11 @@ class SentClassifier(nn.Module):
         batch_size = word_inputs.size(0)
         # loss_function = nn.CrossEntropyLoss(ignore_index=0, reduction='sum')
         outs = outs.view(batch_size, -1)
-        # print("a",outs)
+        # logging.info("a",outs)
         # score = F.log_softmax(outs, 1)
-        # print(score.size(), batch_label.view(batch_size).size())
-        # print(score)
-        # print(batch_label)
+        # logging.info(score.size(), batch_label.view(batch_size).size())
+        # logging.info(score)
+        # logging.info(batch_label)
         # exit(0)
         total_loss = F.cross_entropy(outs, batch_label.view(batch_size))
         # total_loss = loss_function(score, batch_label.view(batch_size))

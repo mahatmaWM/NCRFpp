@@ -8,6 +8,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
+import logging
 
 START_TAG = -2
 STOP_TAG = -1
@@ -36,7 +37,7 @@ class CRF(nn.Module):
 
     def __init__(self, tagset_size, gpu):
         super(CRF, self).__init__()
-        print("build batched CRF...")
+        logging.info("build batched CRF...")
         self.gpu = gpu
 
         # Matrix of transition parameters.

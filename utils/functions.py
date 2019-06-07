@@ -6,6 +6,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import sys
+import logging
 import numpy as np
 
 
@@ -19,7 +20,8 @@ def normalize_word(word):
     return new_word
 
 
-def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, label_alphabet, number_normalized,
+def read_instance(used_feature_names,
+                  input_file, word_alphabet, char_alphabet, feature_alphabets, label_alphabet, number_normalized,
                   max_sent_length, sentence_classification=False, split_token='\t', char_padding_size=-1,
                   char_padding_symbol='</pad>'):
     """
@@ -52,6 +54,13 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
     :param char_padding_symbol:
     :return:
     """
+    # logging.info('used_feature_names ', used_feature_names)
+    # logging.info('feature_alphabets ', feature_alphabets[0].name, feature_alphabets[1].name)
+    used_feature_index_list = list([])
+    for i in range(len(feature_alphabets)):
+        if feature_alphabets[i].name in used_feature_names:
+            used_feature_index_list.append(i)
+
     feature_num = len(feature_alphabets)
     in_lines = open(input_file, 'r', encoding="utf8").readlines()
     instence_texts = []
@@ -140,15 +149,20 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
                 labels.append(label)
                 word_Ids.append(word_alphabet.get_index(word))
                 label_Ids.append(label_alphabet.get_index(label))
+
                 # get features
                 feat_list = []
                 feat_Id = []
                 for idx in range(feature_num):
-                    feat_idx = pairs[idx + 1].split(']', 1)[-1]
-                    feat_list.append(feat_idx)
-                    feat_Id.append(feature_alphabets[idx].get_index(feat_idx))
+                    # used_feature_index_list [0, 1, 3]，表示需要用到的特征的index
+                    if idx in used_feature_index_list:
+                        feat_idx = pairs[idx + 1].split(']', 1)[-1]
+                        # logging.info('feat_idx=', feat_idx)
+                        feat_list.append(feat_idx)
+                        feat_Id.append(feature_alphabets[idx].get_index(feat_idx))
                 features.append(feat_list)
                 feature_Ids.append(feat_Id)
+
                 # get char
                 char_list = []
                 char_Id = []
@@ -192,10 +206,10 @@ def read_instance(input_file, word_alphabet, char_alphabet, feature_alphabets, l
     return instence_texts, instence_Ids
 
 
-def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, norm=True):
+def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, total_embedd_dim=300, norm=True):
     embedd_dict = dict()
     if embedding_path != None:
-        embedd_dict, embedd_dim = load_pretrain_emb(embedding_path)
+        embedd_dict, embedd_dim = load_pretrain_emb(embedding_path, embedd_dim, total_embedd_dim)
     alphabet_size = word_alphabet.size()
     scale = np.sqrt(3.0 / embedd_dim)
     pretrain_emb = np.empty([word_alphabet.size(), embedd_dim])
@@ -219,7 +233,7 @@ def build_pretrain_embedding(embedding_path, word_alphabet, embedd_dim=100, norm
             pretrain_emb[index, :] = np.random.uniform(-scale, scale, [1, embedd_dim])
             not_match += 1
     pretrained_size = len(embedd_dict)
-    print("Embedding:\n     pretrain word:%s, prefect match:%s, case_match:%s, oov:%s, oov%%:%s" % (
+    logging.info("Embedding:\n     pretrain word:%s, prefect match:%s, case_match:%s, oov:%s, oov%%:%s" % (
         pretrained_size, perfect_match, case_match, not_match, (not_match + 0.) / alphabet_size))
     return pretrain_emb, embedd_dim
 
@@ -229,10 +243,11 @@ def norm2one(vec):
     return vec / root_sum_square
 
 
-def load_pretrain_emb(embedding_path):
-    embedd_dim = -1
+def load_pretrain_emb(embedding_path, embedd_dim, total_embedd_dim):
+    # embedd_dim = -1
     embedd_dict = dict()
     with open(embedding_path, 'r', encoding="utf8") as file:
+        # logging.info('word emb total dim size = %s' % (len(file.readline().strip().split()) - 1))
         for line in file:
             line = line.strip()
             if len(line) == 0:
@@ -241,9 +256,11 @@ def load_pretrain_emb(embedding_path):
             if embedd_dim < 0:
                 embedd_dim = len(tokens) - 1
             else:
-                assert (embedd_dim + 1 == len(tokens))
+                # logging.info(total_embedd_dim + 1)
+                # logging.info(len(tokens))
+                assert (total_embedd_dim + 1 == len(tokens))
             embedd = np.empty([1, embedd_dim])
-            embedd[:] = tokens[1:]
+            embedd[:] = tokens[1: embedd_dim + 1]
             if sys.version_info[0] < 3:
                 first_col = tokens[0].decode('utf-8')
             else:
@@ -254,5 +271,5 @@ def load_pretrain_emb(embedding_path):
 
 if __name__ == '__main__':
     a = np.arange(9.0)
-    print(a)
-    print(norm2one(a))
+    logging.info(a)
+    logging.info(norm2one(a))

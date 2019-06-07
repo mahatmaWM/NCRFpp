@@ -6,6 +6,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import torch
+import logging
 import torch.nn as nn
 import numpy as np
 from .charbilstm import CharBiLSTM
@@ -16,7 +17,7 @@ from .charcnn import CharCNN
 class WordRep(nn.Module):
     def __init__(self, data):
         super(WordRep, self).__init__()
-        print("build word representation...")
+        logging.info("build word representation...")
         self.gpu = data.HP_gpu
         self.use_char = data.use_char
         self.batch_size = data.HP_batch_size
@@ -43,7 +44,7 @@ class WordRep(nn.Module):
                                                      self.char_embedding_dim, self.char_hidden_dim, data.HP_dropout,
                                                      self.gpu)
             else:
-                print("Error char feature selection, please check parameter data.char_feature_extractor "
+                logging.info("Error char feature selection, please check parameter data.char_feature_extractor "
                       "(CNN/LSTM/GRU/ALL).")
                 exit(0)
         self.embedding_dim = data.word_emb_dim
@@ -56,22 +57,31 @@ class WordRep(nn.Module):
                 torch.from_numpy(self.random_embedding(data.word_alphabet.size(), self.embedding_dim)))
 
         self.feature_num = data.feature_num
+        self.feature_names_used = data.feature_names_used
+        # self.feature_num = data.feature_num_in_config
         self.feature_embedding_dims = data.feature_emb_dims
         self.feature_embeddings = nn.ModuleList()
+
+        # TODO 获取feature的embedding向量 这里是过一遍数据中所有的特征，然后再根据配置挑出需要的特征
+        # logging.info('data.feature_alphabets[idx]=%s' % data.feature_alphabets)
         for idx in range(self.feature_num):
-            self.feature_embeddings.append(
-                nn.Embedding(data.feature_alphabets[idx].size(), self.feature_embedding_dims[idx]))
+            if data.feature_alphabets[idx].name in self.feature_names_used:
+                self.feature_embeddings.append(
+                    nn.Embedding(data.feature_alphabets[idx].size(), self.feature_embedding_dims[idx]))
+        j = -1
         for idx in range(self.feature_num):
-            if data.pretrain_feature_embeddings[idx] is not None:
-                self.feature_embeddings[idx].weight.data.copy_(torch.from_numpy(data.pretrain_feature_embeddings[idx]))
-            else:
-                self.feature_embeddings[idx].weight.data.copy_(torch.from_numpy(
-                    self.random_embedding(data.feature_alphabets[idx].size(), self.feature_embedding_dims[idx])))
+            if data.feature_alphabets[idx].name in self.feature_names_used:
+                j = j + 1
+                if data.pretrain_feature_embeddings[idx] is not None:
+                    self.feature_embeddings[j].weight.data.copy_(torch.from_numpy(data.pretrain_feature_embeddings[idx]))
+                else:
+                    self.feature_embeddings[j].weight.data.copy_(torch.from_numpy(
+                        self.random_embedding(data.feature_alphabets[idx].size(), self.feature_embedding_dims[idx])))
 
         if self.gpu:
             self.drop = self.drop.cuda()
             self.word_embedding = self.word_embedding.cuda()
-            for idx in range(self.feature_num):
+            for idx in range(len(self.feature_names_used)):
                 self.feature_embeddings[idx] = self.feature_embeddings[idx].cuda()
 
     def random_embedding(self, vocab_size, embedding_dim):
@@ -98,11 +108,15 @@ class WordRep(nn.Module):
         word_embs = self.word_embedding(word_inputs)
         word_list = [word_embs]
         if not self.sentence_classification:
-            for idx in range(self.feature_num):
+            # logging.info('used feature num=%s' % len(self.feature_names_used))
+            # logging.info('feature_embeddings=%s' % self.feature_embeddings)
+            # logging.info('feature_inputs=%s' % feature_inputs)
+            for idx in range(len(self.feature_names_used)):
                 word_list.append(self.feature_embeddings[idx](feature_inputs[idx]))
+        # logging.info('word_list=%s' % word_list)
         if self.use_char:
             # calculate char lstm last hidden
-            # print("charinput:", char_inputs)
+            # logging.info("charinput:", char_inputs)
             # exit(0)
             char_features = self.char_feature.get_last_hiddens(char_inputs, char_seq_lengths.cpu().numpy())
             char_features = char_features[char_seq_recover]
@@ -118,5 +132,6 @@ class WordRep(nn.Module):
                 # concat word and char together
                 word_list.append(char_features_extra)
         word_embs = torch.cat(word_list, 2)
+        # logging.info(word_embs)
         word_represent = self.drop(word_embs)
         return word_represent

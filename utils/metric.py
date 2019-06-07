@@ -8,6 +8,7 @@
 #
 from __future__ import print_function
 import sys
+import logging
 
 
 ## input as sentence level labels
@@ -56,9 +57,9 @@ def get_ner_fmeasure(golden_lists, predict_lists, label_type="BMES"):
     accuracy = (right_tag + 0.0) / all_tag
     # print "Accuracy: ", right_tag,"/",all_tag,"=",accuracy
     if label_type.upper().startswith("B-"):
-        print("gold_num = ", golden_num, " pred_num = ", predict_num, " right_num = ", right_num)
+        logging.info("gold_num=%s, pred_num=%s, right_num=%s" % (golden_num, predict_num, right_num))
     else:
-        print("Right token = ", right_tag, " All token = ", all_tag, " acc = ", accuracy)
+        logging.info("Right token = %s, All token = %s, acc = %s" % (right_tag, all_tag, accuracy))
     return accuracy, precision, recall, f_measure
 
 
@@ -211,18 +212,18 @@ def readTwoLabelSentence(input_file, pred_col=-1):
 
 
 def fmeasure_from_file(golden_file, predict_file, label_type="BMES"):
-    print("Get f measure from file:", golden_file, predict_file)
-    print("Label format:", label_type)
+    logging.info("Get f measure from file:", golden_file, predict_file)
+    logging.info("Label format:", label_type)
     golden_sent, golden_labels = readSentence(golden_file)
     predict_sent, predict_labels = readSentence(predict_file)
     P, R, F = get_ner_fmeasure(golden_labels, predict_labels, label_type)
-    print("P:%sm R:%s, F:%s" % (P, R, F))
+    logging.info("P:%sm R:%s, F:%s" % (P, R, F))
 
 
 def fmeasure_from_singlefile(twolabel_file, label_type="BMES", pred_col=-1):
     sent, golden_labels, predict_labels = readTwoLabelSentence(twolabel_file, pred_col)
     P, R, F = get_ner_fmeasure(golden_labels, predict_labels, label_type)
-    print("P:%s, R:%s, F:%s" % (P, R, F))
+    logging.info("P:%s, R:%s, F:%s" % (P, R, F))
 
 
 if __name__ == '__main__':
