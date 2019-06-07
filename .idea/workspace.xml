@@ -2,38 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a4cc60f9-a589-4d1d-a5e6-d9098129c3a8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/gensim_word2vec/word.emb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sample_data/demo.clf.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_pre_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_pre_process.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gensim_word2vec/word2vec.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gensim_word2vec/word2vec.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gensim_word2vec/word2vec_continue_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/gensim_word2vec/word2vec_continue_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main_parse.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_parse.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/charbigru.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/charbigru.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/charbilstm.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/charbilstm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/charcnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/charcnn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/crf.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/crf.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/sentclassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/sentclassifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/seqlabel.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/seqlabel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/wordrep.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/wordrep.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/wordsequence.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/wordsequence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/demo.train.config" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/demo.train.config" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/dev.bmes" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/dev.bmes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/dev.cappos.bmes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/raw.bmes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/test.bmes" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/test.bmes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/test.cappos.bmes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/train.bmes" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/train.bmes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/train.cappos.bmes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/slot.fm/slot.fm.train.config" beforeDir="false" afterPath="$PROJECT_DIR$/slot.fm/slot.fm.train.config" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/slot.music/slot.music.decode.config" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/slot.music/slot.music.train.config" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/alphabet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/alphabet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/metric.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/metric.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/tagSchemeConverter.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tagSchemeConverter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/demo.seq.config" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/demo.seq.config" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -42,69 +14,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/functions.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="258" column="52" lean-forward="true" selection-start-line="258" selection-start-column="52" selection-end-line="258" selection-end-column="52" />
-              <folding>
-                <element signature="e#177#214#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/sample_data/demo.train.config">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="28" column="1" lean-forward="true" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/model/wordrep.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="653">
-              <caret line="104" column="11" lean-forward="true" selection-start-line="104" selection-start-column="11" selection-end-line="104" selection-end-column="11" />
-              <folding>
-                <element signature="e#182#219#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/model/wordsequence.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="28" column="43" lean-forward="true" selection-start-line="28" selection-start-column="43" selection-end-line="28" selection-end-column="43" />
-              <folding>
-                <element signature="e#182#219#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="298">
-              <caret line="568" lean-forward="true" selection-start-line="568" selection-end-line="568" />
-              <folding>
-                <element signature="e#178#215#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
+    <leaf>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/seqlabel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="406">
-              <caret line="43" column="69" lean-forward="true" selection-start-line="43" selection-start-column="69" selection-end-line="43" selection-end-column="69" />
+            <state relative-caret-position="-125">
+              <caret line="43" column="69" selection-start-line="43" selection-start-column="69" selection-end-line="43" selection-end-column="69" />
               <folding>
                 <element signature="e#183#220#0" expanded="true" />
               </folding>
@@ -113,13 +28,82 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/model/wordrep.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1170">
+              <caret line="78" column="40" selection-start-line="78" selection-start-column="40" selection-end-line="78" selection-end-column="40" />
+              <folding>
+                <element signature="e#182#219#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/tagSchemeConverter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-785">
+              <caret line="49" column="46" selection-start-line="49" selection-start-column="46" selection-end-line="49" selection-end-column="46" />
+              <folding>
+                <element signature="e#280#317#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/metric.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="186" column="23" selection-start-line="186" selection-start-column="23" selection-end-line="186" selection-end-column="23" />
+              <folding>
+                <element signature="e#207#244#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/alphabet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1485">
+              <caret line="99" column="8" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="8" />
+              <folding>
+                <element signature="e#284#321#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="302" column="83" selection-start-line="302" selection-start-column="83" selection-end-line="302" selection-end-column="83" />
+            <state relative-caret-position="254">
+              <caret line="163" column="39" selection-start-line="163" selection-start-column="39" selection-end-line="163" selection-end-column="39" />
               <folding>
                 <element signature="e#177#214#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="129">
+              <caret line="235" lean-forward="true" selection-start-line="235" selection-end-line="235" />
+              <folding>
+                <element signature="e#177#214#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="9" column="12" lean-forward="true" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -135,11 +119,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>batchify_sequence_labeling_with_label</find>
-      <find>pretrain_word_embedding</find>
-      <find>random_embedding</find>
-      <find>batchify_with_label</find>
-      <find># #</find>
       <find>Find feature:</find>
       <find>initial_feature_alphabets</find>
       <find>feature=</find>
@@ -147,7 +126,6 @@
       <find>norm_feature_embs</find>
       <find>emb_norm</find>
       <find>MAX SENTENCE LENGTH</find>
-      <find>##</find>
       <find>evaluate</find>
       <find>optimizer</find>
       <find>result has been written into file</find>
@@ -163,12 +141,18 @@
       <find>feature_name</find>
       <find>used_feature_names = list(data.feat_config.keys())</find>
       <find>feature_indexes_used_in_config</find>
-      <find>input_size</find>
       <find>used_feature_names</find>
+      <find>input_size</find>
+      <find>split_token</find>
+      <find>load_model_dir</find>
+      <find>status</find>
+      <find>feature_names_used</find>
+      <find>word_alphabet_size</find>
+      <find>##</find>
     </findStrings>
     <replaceStrings>
-      <replace>#</replace>
       <replace>logging.info(</replace>
+      <replace>#</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -177,7 +161,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/utils/tagSchemeConverter.py" />
         <option value="$PROJECT_DIR$/train.config" />
         <option value="$PROJECT_DIR$/demo.train.config" />
         <option value="$PROJECT_DIR$/slot.fm.train.config" />
@@ -186,7 +169,6 @@
         <option value="$PROJECT_DIR$/slot.music.decode.config" />
         <option value="$PROJECT_DIR$/slot.music/slot.music.train.config" />
         <option value="$PROJECT_DIR$/slot.music/decode.config" />
-        <option value="$PROJECT_DIR$/data_pre_process.py" />
         <option value="$PROJECT_DIR$/slot.fm/slot.fm.train.config" />
         <option value="$PROJECT_DIR$/slot.music/train.config" />
         <option value="$PROJECT_DIR$/data_pre_process_v2.py" />
@@ -196,19 +178,25 @@
         <option value="$PROJECT_DIR$/model/charbigru.py" />
         <option value="$PROJECT_DIR$/model/charbilstm.py" />
         <option value="$PROJECT_DIR$/model/charcnn.py" />
-        <option value="$PROJECT_DIR$/model/crf.py" />
         <option value="$PROJECT_DIR$/model/sentclassifier.py" />
         <option value="$PROJECT_DIR$/model/seqlabel.py" />
-        <option value="$PROJECT_DIR$/utils/metric.py" />
         <option value="$PROJECT_DIR$/sample_data/train.bmes" />
         <option value="$PROJECT_DIR$/sample_data/dev.bmes" />
         <option value="$PROJECT_DIR$/sample_data/test.bmes" />
-        <option value="$PROJECT_DIR$/model/wordrep.py" />
-        <option value="$PROJECT_DIR$/model/wordsequence.py" />
+        <option value="$PROJECT_DIR$/sample_data/demo.decode.config" />
+        <option value="$PROJECT_DIR$/sample_data/demo.train.config" />
+        <option value="$PROJECT_DIR$/data_pre_process.py" />
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/utils/data.py" />
+        <option value="$PROJECT_DIR$/ner.tvseries/seq.config" />
+        <option value="$PROJECT_DIR$/model/crf.py" />
+        <option value="$PROJECT_DIR$/model/wordsequence.py" />
+        <option value="$PROJECT_DIR$/model/wordrep.py" />
+        <option value="$PROJECT_DIR$/utils/tagSchemeConverter.py" />
+        <option value="$PROJECT_DIR$/utils/metric.py" />
+        <option value="$PROJECT_DIR$/sample_data/demo.seq.config" />
         <option value="$PROJECT_DIR$/utils/functions.py" />
-        <option value="$PROJECT_DIR$/sample_data/demo.train.config" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -223,6 +211,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -230,21 +219,10 @@
               <item name="NCRFpp" type="b2602c69:ProjectViewProjectNode" />
               <item name="NCRFpp" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="NCRFpp" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NCRFpp" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="NCRFpp" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NCRFpp" type="462c0819:PsiDirectoryNode" />
-              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -315,18 +293,20 @@
       <workItem from="1559786185853" duration="826000" />
       <workItem from="1559803927184" duration="7664000" />
       <workItem from="1559834231527" duration="9087000" />
-      <workItem from="1559873099498" duration="4796000" />
+      <workItem from="1559873099498" duration="4918000" />
+      <workItem from="1559886904728" duration="4730000" />
+      <workItem from="1559894907264" duration="3155000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72978000" />
+    <option name="totallyTimeSpent" value="80985000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="59" y="23" width="1372" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21729323" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22330827" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -339,8 +319,8 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007669" side_tool="true" weight="0.3286517" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49923313" weight="0.73097116" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50150377" side_tool="true" weight="0.7545932" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.49849623" visible="true" weight="0.7545932" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.3292517" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -356,62 +336,13 @@
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.config" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/train.config" />
-    <entry file="file://$PROJECT_DIR$/LICENCE" />
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/NERdata/train.txt" />
-    <entry file="file://$PROJECT_DIR$/slot.fm/raw.out">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dev.txt" />
-    <entry file="file://$PROJECT_DIR$/slot.music/slot.music.train.config" />
-    <entry file="file://$PROJECT_DIR$/slot.music/dev.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/slot.music/decode.config">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/slot.fm/slot.fm.train.config">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/slot.music/train.config">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/train-simple.txt">
-      <provider editor-type-id="text-editor" />
-      <provider selected="true" editor-type-id="LargeFileEditor">
-        <state relative-caret-position="-2556367" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/test-simple.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.song/train.config">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/slot.music/test.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/slot.music/test_simple.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.song/dev_crfpp_char.txt">
-      <provider selected="true" editor-type-id="LargeFileEditor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/slot.fm/slot.fm.train.config" />
+    <entry file="file://$PROJECT_DIR$/slot.music/train.config" />
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/train-simple.txt" />
+    <entry file="file://$PROJECT_DIR$/ner.song/train.config" />
+    <entry file="file://$PROJECT_DIR$/slot.music/test.txt" />
+    <entry file="file://$PROJECT_DIR$/slot.music/test_simple.txt" />
+    <entry file="file://$PROJECT_DIR$/ner.song/dev_crfpp_char.txt" />
     <entry file="file://$PROJECT_DIR$/emb/res.emb.txt">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state relative-caret-position="240">
@@ -419,38 +350,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/train.config">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/test-bi-simple.txt">
-      <provider selected="true" editor-type-id="LargeFileEditor">
-        <state relative-caret-position="210">
-          <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/dev_crfpp_char.txt">
-      <provider selected="true" editor-type-id="LargeFileEditor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ner.tvseries/dev-simple.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/train.config" />
     <entry file="file://$PROJECT_DIR$/temp/sys.music.singer/test-bi-simple.txt" />
     <entry file="file://$PROJECT_DIR$/temp/sys.music.singer/dev-bi-simple.txt" />
-    <entry file="file://$PROJECT_DIR$/data_pre_process.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="27" lean-forward="true" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
-          <folding>
-            <element signature="e#54#67#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data_pre_process_v1.py" />
     <entry file="file://$PROJECT_DIR$/data_pre_process_v2.py" />
     <entry file="file://$PROJECT_DIR$/main_parse.py">
@@ -466,9 +368,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/slot.fm/train.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/slot.fm/train.txt" />
     <entry file="file://$PROJECT_DIR$/model/charbilstm.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -483,16 +383,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
           <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
-          <folding>
-            <element signature="e#182#219#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model/crf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" selection-start-line="11" selection-end-line="11" />
           <folding>
             <element signature="e#182#219#0" expanded="true" />
           </folding>
@@ -522,28 +412,11 @@
     <entry file="file://$PROJECT_DIR$/sample_data/lstmcrf.dset">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/metric.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="58" column="43" selection-start-line="58" selection-start-column="43" selection-end-line="58" selection-end-column="43" />
-          <folding>
-            <element signature="e#207#244#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sample_data/dev.cappos.bmes" />
     <entry file="file://$PROJECT_DIR$/sample_data/sample.word.emb">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="309">
           <caret line="64" column="378" selection-start-line="64" selection-start-column="378" selection-end-line="64" selection-end-column="378" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/alphabet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="99" column="8" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -561,13 +434,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sample_data/train.bmes">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="55" selection-start-line="4" selection-start-column="55" selection-end-line="4" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sample_data/test.bmes">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -575,50 +441,141 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/seqlabel.py">
+    <entry file="file://$PROJECT_DIR$/sample_data/demo.decode.config" />
+    <entry file="file://$PROJECT_DIR$/sample_data/demo.train.config" />
+    <entry file="file://$PROJECT_DIR$/sample_data/train.bmes">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="43" column="69" lean-forward="true" selection-start-line="43" selection-start-column="69" selection-end-line="43" selection-end-column="69" />
-          <folding>
-            <element signature="e#183#220#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="330">
+          <caret line="22" column="20" selection-start-line="22" selection-start-column="20" selection-end-line="22" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/wordrep.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="653">
-          <caret line="104" column="11" lean-forward="true" selection-start-line="104" selection-start-column="11" selection-end-line="104" selection-end-column="11" />
-          <folding>
-            <element signature="e#182#219#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/slot.fm/dev.txt" />
+    <entry file="file://$PROJECT_DIR$/slot.music/dev.txt" />
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/dev-simple.txt" />
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/dev_crfpp_char.txt">
+      <provider selected="true" editor-type-id="LargeFileEditor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/wordsequence.py">
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/test-bi-simple.txt" />
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/test-simple.txt" />
+    <entry file="file://$PROJECT_DIR$/data_pre_process.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="28" column="43" lean-forward="true" selection-start-line="28" selection-start-column="43" selection-end-line="28" selection-end-column="43" />
+        <state relative-caret-position="150">
+          <caret line="10" column="43" selection-start-line="10" selection-start-column="43" selection-end-line="10" selection-end-column="43" />
           <folding>
-            <element signature="e#182#219#0" expanded="true" />
+            <element signature="e#54#67#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="568" lean-forward="true" selection-start-line="568" selection-end-line="568" />
+        <state relative-caret-position="-1010">
+          <caret line="152" column="56" selection-start-line="152" selection-start-column="56" selection-end-line="152" selection-end-column="56" />
           <folding>
             <element signature="e#178#215#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/test.txt">
+      <provider selected="true" editor-type-id="LargeFileEditor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ner.tvseries/seq.config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="15" column="27" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/crf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="915">
+          <caret line="405" column="41" selection-start-line="405" selection-start-column="41" selection-end-line="405" selection-end-column="41" />
+          <folding>
+            <element signature="e#182#219#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/seqlabel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-125">
+          <caret line="43" column="69" selection-start-line="43" selection-start-column="69" selection-end-line="43" selection-end-column="69" />
+          <folding>
+            <element signature="e#183#220#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/wordsequence.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="73" column="52" lean-forward="true" selection-start-line="73" selection-start-column="52" selection-end-line="73" selection-end-column="52" />
+          <folding>
+            <element signature="e#182#219#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/wordrep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1170">
+          <caret line="78" column="40" selection-start-line="78" selection-start-column="40" selection-end-line="78" selection-end-column="40" />
+          <folding>
+            <element signature="e#182#219#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/tagSchemeConverter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-785">
+          <caret line="49" column="46" selection-start-line="49" selection-start-column="46" selection-end-line="49" selection-end-column="46" />
+          <folding>
+            <element signature="e#280#317#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/metric.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="186" column="23" selection-start-line="186" selection-start-column="23" selection-end-line="186" selection-end-column="23" />
+          <folding>
+            <element signature="e#207#244#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_data/demo.seq.config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="41" column="21" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/alphabet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1485">
+          <caret line="99" column="8" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="8" />
+          <folding>
+            <element signature="e#284#321#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/utils/data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="302" column="83" selection-start-line="302" selection-start-column="83" selection-end-line="302" selection-end-column="83" />
+        <state relative-caret-position="254">
+          <caret line="163" column="39" selection-start-line="163" selection-start-column="39" selection-end-line="163" selection-end-column="39" />
           <folding>
             <element signature="e#177#214#0" expanded="true" />
           </folding>
@@ -627,18 +584,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="258" column="52" lean-forward="true" selection-start-line="258" selection-start-column="52" selection-end-line="258" selection-end-column="52" />
+        <state relative-caret-position="129">
+          <caret line="235" lean-forward="true" selection-start-line="235" selection-end-line="235" />
           <folding>
             <element signature="e#177#214#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sample_data/demo.train.config">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="1" lean-forward="true" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
+        <state relative-caret-position="135">
+          <caret line="9" column="12" lean-forward="true" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
         </state>
       </provider>
     </entry>

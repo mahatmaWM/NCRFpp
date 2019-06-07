@@ -1,9 +1,10 @@
 *.py[cod]
 __pycache__
 *.dset
+workspace.xml
 *.model
 *.txt
-demo.clf.*
 sent.*
 *.out
 *.log
+ner.tvseries
