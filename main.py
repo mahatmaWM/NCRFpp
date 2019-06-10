@@ -12,7 +12,6 @@ import random
 import torch
 import gc
 import logging
-import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from utils.metric import get_ner_fmeasure
@@ -569,14 +568,12 @@ if __name__ == '__main__':
         data.generate_instance('dev', used_feature_names)
         data.generate_instance('test', used_feature_names)
         data.build_pretrain_emb()
-        # exit(0)
         train(data)
     elif status == 'decode':
         logging.info("MODEL: decode")
         data.load(data.dset_dir)
         data.read_config(args.config)
         logging.info(data.raw_dir)
-        # exit(0)
         data.show_data_summary()
         data.generate_instance('raw', used_feature_names)
         logging.info("nbest: %s" % data.nbest)
