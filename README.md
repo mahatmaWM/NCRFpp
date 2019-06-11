@@ -1,5 +1,6 @@
 ![NCRF++ Logo](https://github.com/jiesutd/NCRFpp/blob/master/readme/logo.png)
 
+### 在原始的NCRF++基础上改了数据预处理和特征使用的部分，可以从数据中挑选使用的特征，这样方便做实验。参考sample_data里面的配置例子。
 
 # NCRF++: An Open-source Neural Sequence Labeling Toolkit
 
