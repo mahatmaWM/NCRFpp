@@ -7,4 +7,5 @@ workspace.xml
 sent.*
 *.out
 *.log
+*.emb
 ner.tvseries
