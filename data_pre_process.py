@@ -6,8 +6,8 @@
 import codecs
 
 if __name__ == '__main__':
-    with codecs.open('./ner.tvseries/test_crfpp_char.txt', "r", "utf-8") as f1, \
-            codecs.open('./ner.tvseries/test.txt', "w", "utf-8") as f_train:
+    with codecs.open('./sys.media.ip/test.txt', "r", "utf-8") as f1, \
+            codecs.open('./sys.media.ip/test_new.txt', "w", "utf-8") as f_train:
 
         sentence = list([])
         chars = list([])

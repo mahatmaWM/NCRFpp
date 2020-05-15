@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import sys
 import logging
 import numpy as np
-
+import utils
 
 def normalize_word(word):
     new_word = ""
@@ -247,7 +247,7 @@ def load_pretrain_emb(embedding_path, embedd_dim):
     """
     embedd_dict = dict()
     with open(embedding_path, 'r', encoding="utf8") as file:
-        first_line = file.readline().strip()
+        first_line = file.readline().rstrip()
         spilts = first_line.split()
         if len(spilts) == 2:
             total_embedd_dim = int(spilts[1])
@@ -255,14 +255,14 @@ def load_pretrain_emb(embedding_path, embedd_dim):
             total_embedd_dim = len(spilts) - 1
         logging.info('%s emb file has %s dim size' % (embedding_path, total_embedd_dim))
         for line in file:
-            line = line.strip()
+            line = line.rstrip()
             if len(line) == 0:
                 continue
             tokens = line.split()
             if embedd_dim < 0:
                 embedd_dim = len(tokens) - 1
-            else:
-                assert (total_embedd_dim + 1 == len(tokens))
+            elif total_embedd_dim + 1 != len(tokens):
+                 continue
             embedd = np.empty([1, embedd_dim])
             embedd[:] = tokens[1: embedd_dim + 1]
             if sys.version_info[0] < 3:
@@ -274,6 +274,9 @@ def load_pretrain_emb(embedding_path, embedd_dim):
 
 
 if __name__ == '__main__':
+    utils.configure_logging()
     a = np.arange(9.0)
     logging.info(a)
     logging.info(norm2one(a))
+    embedd_dict, embedd_dim = load_pretrain_emb(sys.argv[1], int(sys.argv[2]))
+    logging.info('embedd_dict size={}, and embedd_dim={}'.format(len(embedd_dict), embedd_dim))

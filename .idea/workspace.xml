@@ -3,8 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="a4cc60f9-a589-4d1d-a5e6-d9098129c3a8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_pre_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_pre_process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/alphabet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/alphabet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/functions.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,48 +21,15 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>initial_feature_alphabets</find>
-      <find>feature=</find>
-      <find>norm       emb</find>
-      <find>norm_feature_embs</find>
-      <find>emb_norm</find>
-      <find>MAX SENTENCE LENGTH</find>
-      <find>evaluate</find>
-      <find>optimizer</find>
-      <find>result has been written into file</find>
-      <find>prefect match</find>
-      <find>Find feature</find>
-      <find>FEATURE num</find>
-      <find>Find feature in data</find>
-      <find>read_instance</find>
-      <find>feature_num</find>
-      <find>Load pretrained word embeddin</find>
-      <find>word_emb_dim</find>
-      <find>print(</find>
-      <find>feature_name</find>
-      <find>used_feature_names = list(data.feat_config.keys())</find>
-      <find>feature_indexes_used_in_config</find>
-      <find>used_feature_names</find>
-      <find>input_size</find>
-      <find>split_token</find>
-      <find>load_model_dir</find>
-      <find>status</find>
-      <find>feature_names_used</find>
-      <find>word_alphabet_size</find>
-      <find>##</find>
-      <find>lr_decay</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>logging.info(</replace>
-      <replace>#</replace>
-    </replaceStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1MdCmHp3X7uA6bxcpscSZvN7Sm6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -66,21 +37,24 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
+  <component name="ServiceViewManager">
+    <option name="viewStates">
       <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
       </list>
     </option>
   </component>
@@ -146,6 +120,29 @@
       <workItem from="1560504001912" duration="368000" />
       <workItem from="1560504501454" duration="461000" />
       <workItem from="1560505249353" duration="847000" />
+      <workItem from="1560754783173" duration="171000" />
+      <workItem from="1561998406465" duration="4213000" />
+      <workItem from="1562050006648" duration="187000" />
+      <workItem from="1562050709562" duration="433000" />
+      <workItem from="1562239598896" duration="156000" />
+      <workItem from="1562239764934" duration="374000" />
+      <workItem from="1563459036210" duration="130000" />
+      <workItem from="1563459172657" duration="23000" />
+      <workItem from="1564024320865" duration="348000" />
+      <workItem from="1564380467796" duration="156000" />
+      <workItem from="1566267983915" duration="152000" />
+      <workItem from="1566299316155" duration="41000" />
+      <workItem from="1568808150140" duration="712000" />
+      <workItem from="1569868758502" duration="61000" />
+      <workItem from="1571132409826" duration="268000" />
+      <workItem from="1571208368177" duration="30000" />
+      <workItem from="1571208510984" duration="383000" />
+      <workItem from="1576065585593" duration="1000" />
+      <workItem from="1577430189540" duration="3159000" />
+      <workItem from="1578472964341" duration="33000" />
+      <workItem from="1578473039019" duration="419000" />
+      <workItem from="1578639520469" duration="77000" />
+      <workItem from="1581316008843" duration="3000000" />
     </task>
     <servers />
   </component>
@@ -160,10 +157,32 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="400" y="236" width="683" height="486" key="find.popup" timestamp="1581316359795">
+      <screen x="40" y="23" width="1400" height="877" />
+    </state>
+    <state x="400" y="236" width="683" height="486" key="find.popup/40.23.1400.877@40.23.1400.877" timestamp="1581316359795" />
   </component>
 </project>

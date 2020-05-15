@@ -124,8 +124,11 @@ class Data:
         logging.info("     MAX   WORD   LENGTH: %s" % (self.MAX_WORD_LENGTH))
         logging.info("     Number   normalized: %s" % (self.number_normalized))
         logging.info("     Word  alphabet size: %s" % (self.word_alphabet_size))
+        # logging.info("     Word: %s" % (self.word_alphabet.get_content()))
         logging.info("     Char  alphabet size: %s" % (self.char_alphabet_size))
+        # logging.info("     Char: %s" % (self.char_alphabet.get_content()))
         logging.info("     Label alphabet size: %s" % (self.label_alphabet_size))
+        logging.info("     Label: %s" % (self.label_alphabet.get_content()))
         logging.info("     Word embedding  dir: %s" % (self.word_emb_dir))
         logging.info("     Char embedding  dir: %s" % (self.char_emb_dir))
         logging.info("     Word embedding size: %s" % (self.word_emb_dim))
@@ -232,7 +235,7 @@ class Data:
     def build_alphabet(self, input_file):
         in_lines = open(input_file, 'r').readlines()
         for line in in_lines:
-            if len(line) > 2:
+            if len(line) >= 2:
                 # if sentence classification data format, splited by \t
                 if self.sentence_classification:
                     pairs = line.strip().split(self.split_token)
@@ -256,6 +259,7 @@ class Data:
                 # if sequence labeling data format i.e. CoNLL 2003
                 else:
                     pairs = line.strip().split()
+                    # logging.info('%s___%s' % (pairs[0], pairs[1]))
                     word = pairs[0]
                     if sys.version_info[0] < 3:
                         word = word.decode('utf-8')
@@ -263,6 +267,7 @@ class Data:
                         word = normalize_word(word)
                     label = pairs[-1]
                     self.label_alphabet.add(label)
+                    # logging.info('%s' % word)
                     self.word_alphabet.add(word)
                     # build feature alphabet
                     for idx in range(self.feature_num):
